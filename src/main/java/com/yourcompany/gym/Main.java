@@ -10,8 +10,12 @@ public class Main {
     public static void main(String[] args) {
 
         ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+        //переходит в AppCinfig.class и выполняет @ComponentScan,
+        // находит все сервисы и DAO, видит их зависимости друг от друга
+        // выстраивает их в единую рабочую систему.
 
         GymFacade gymFacade = context.getBean(GymFacade.class);
+        //просим собраный, готовый к работе GymFacade
 
         System.out.println("--- Creating a new Trainee profile ---");
         Trainee newTrainee = new Trainee();
