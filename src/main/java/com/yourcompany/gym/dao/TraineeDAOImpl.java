@@ -8,13 +8,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
-@Repository
+@Repository //TODO: уточнмть аннотацию
 public class TraineeDAOImpl implements TraineeDAO {
 
-    private final Storage storage;
+    private final TraineeStorage storage;
     private final AtomicLong idCounter = new AtomicLong(0);
 
-    public TraineeDAOImpl(Storage storage) {
+    public TraineeDAOImpl(TraineeStorage storage) {
+
         this.storage = storage;
     }
 
@@ -40,6 +41,14 @@ public class TraineeDAOImpl implements TraineeDAO {
                 .filter(trainee -> trainee.getUsername().equals(username))
                 .findFirst();
     }
+
+    public List<Trainee> startsWithUsername(String username) {
+        return storage.getTrainees().values().stream()
+                .filter(trainee -> trainee.getUsername().startsWith(username))
+                .sorted() //TODO: посмотреть как сделать natural order
+                .toList();
+    }
+
 
     @Override
     public List<Trainee> findAll() {

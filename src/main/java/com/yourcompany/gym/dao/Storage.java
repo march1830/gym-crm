@@ -11,7 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class Storage {
+public class Storage<V> {
+    private final Map<Long, V> storage = new HashMap<>();
 
     private final Map<Long, Trainee> trainees = new HashMap<>();
     private final Map<Long, Trainer> trainers = new HashMap<>();
