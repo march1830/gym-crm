@@ -7,6 +7,8 @@ import java.util.Optional;
 
 public interface TrainerDAO {
 
+    void deleteById(Long id);
+
     Trainer save(Trainer trainer);
 
     Optional<Trainer> findById(Long id);
