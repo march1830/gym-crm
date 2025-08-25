@@ -10,7 +10,8 @@ import java.util.Optional;
 
 @Service
 public class TraineeServiceImpl implements TraineeService {
-
+    //private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(TraineeServiceImpl.class.getName());
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TraineeServiceImpl.class);
       @Autowired
     private TraineeDAO traineeDAO;
 
@@ -20,10 +21,13 @@ public class TraineeServiceImpl implements TraineeService {
         String baseUsername = trainee.getFirstName().toLowerCase() + "." + trainee.getLastName().toLowerCase();
         String finalUsername = baseUsername;
         int suffix = 1;
-        while (traineeDAO.findByUsername(finalUsername).isPresent()) {
-            finalUsername = baseUsername + suffix;
-            suffix++;
-        }
+        log.info("user created with username: {}", finalUsername);
+        //TODO: взять последний элемент, посмотреть заканчивается ли он на цифру, если да то спарсить ее и сделать +1
+        //если нет, то сделать просто +1
+//        while (traineeDAO.findByUsername(finalUsername).isPresent()) {
+//            finalUsername = baseUsername + suffix;
+//            suffix++;
+//        }
         trainee.setUsername(finalUsername);
 
         String password = RandomStringUtils.randomAlphanumeric(10);
@@ -31,6 +35,7 @@ public class TraineeServiceImpl implements TraineeService {
 
         trainee.setActive(true);
 
+        //TODO: Часть с генерацией username и пароля вынести в отдельный PasswordUtils
         return traineeDAO.save(trainee);
     }
 
