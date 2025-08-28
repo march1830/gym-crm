@@ -2,29 +2,23 @@ package com.yourcompany.gym.dao.impl;
 
 import com.yourcompany.gym.dao.TrainingDAO;
 import com.yourcompany.gym.model.Training;
-import com.yourcompany.gym.utils.IdGenerator; // Убедитесь, что путь к IdGenerator правильный
-import org.springframework.beans.factory.annotation.Autowired;
+import com.yourcompany.gym.utils.IdGenerator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
 @Repository
+@RequiredArgsConstructor
 public class TrainingDAOImpl implements TrainingDAO {
 
-    // 1. Собственное хранилище вместо старого Storage
-    private final Map<Long, Training> trainings = new HashMap<>();
+    private final Map<Long, Training> trainingStorage;
     private final IdGenerator idGenerator;
-
-    @Autowired
-    public TrainingDAOImpl(IdGenerator idGenerator) {
-        this.idGenerator = idGenerator;
-    }
 
     @Override
     public Training save(Training training) {
@@ -34,33 +28,33 @@ public class TrainingDAOImpl implements TrainingDAO {
             Long newId = idGenerator.getNextId();
             training.setId(newId);
         }
-        trainings.put(training.getId(), training);
+        trainingStorage.put(training.getId(), training);
         log.info("LOG: Saved new training with ID: " + training.getId());
         return training;
     }
 
     @Override
     public Optional<Training> findById(Long id) {
-        return Optional.ofNullable(trainings.get(id));
+        return Optional.ofNullable(trainingStorage.get(id));
     }
 
     @Override
     public List<Training> findAll() {
-        return new ArrayList<>(trainings.values());
+        return new ArrayList<>(trainingStorage.values());
     }
 
     @Override
     public Training update(Training training) {
-        if (training.getId() == null ||!trainings.containsKey(training.getId())) {
+        if (training.getId() == null ||!trainingStorage.containsKey(training.getId())) {
             log.warn("ERROR: Attempt to update non-existent training.");
             return null;
         }
-        trainings.put(training.getId(), training);
+        trainingStorage.put(training.getId(), training);
         return training;
     }
 
     @Override
     public void deleteById(Long id) {
-        trainings.remove(id);
+        trainingStorage.remove(id);
     }
 }
