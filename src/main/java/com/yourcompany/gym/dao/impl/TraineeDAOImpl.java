@@ -5,6 +5,7 @@ import com.yourcompany.gym.model.Trainee;
 import com.yourcompany.gym.utils.IdGenerator; // Убедитесь, что путь к IdGenerator правильный
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @Repository
 public class TraineeDAOImpl implements TraineeDAO {
 
@@ -29,7 +31,7 @@ public class TraineeDAOImpl implements TraineeDAO {
         Long newId = idGenerator.getNextId();
         trainee.setId(newId);
         trainees.put(newId, trainee);
-        System.out.println("LOG: Saved new trainee with ID: " + newId);
+        log.info("LOG: Saved new trainee with ID: " + newId);
         return trainee;
     }
 
@@ -53,7 +55,7 @@ public class TraineeDAOImpl implements TraineeDAO {
     @Override
     public Trainee update(Trainee trainee) {
         if (trainee.getId() == null ||!trainees.containsKey(trainee.getId())) {
-            System.out.println("ERROR: Attempt to update non-existent trainee.");
+            log.warn("ERROR: Attempt to update non-existent trainee.");
             return null;
         }
         trainees.put(trainee.getId(), trainee);

@@ -5,6 +5,7 @@ import com.yourcompany.gym.model.Training;
 import com.yourcompany.gym.utils.IdGenerator; // Убедитесь, что путь к IdGenerator правильный
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @Repository
 public class TrainingDAOImpl implements TrainingDAO {
 
@@ -33,7 +35,7 @@ public class TrainingDAOImpl implements TrainingDAO {
             training.setId(newId);
         }
         trainings.put(training.getId(), training);
-        System.out.println("LOG: Saved new training with ID: " + training.getId());
+        log.info("LOG: Saved new training with ID: " + training.getId());
         return training;
     }
 
@@ -50,7 +52,7 @@ public class TrainingDAOImpl implements TrainingDAO {
     @Override
     public Training update(Training training) {
         if (training.getId() == null ||!trainings.containsKey(training.getId())) {
-            System.out.println("ERROR: Attempt to update non-existent training.");
+            log.warn("ERROR: Attempt to update non-existent training.");
             return null;
         }
         trainings.put(training.getId(), training);
