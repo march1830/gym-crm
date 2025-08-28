@@ -2,6 +2,7 @@ package com.yourcompany.gym.service;
 
 import com.yourcompany.gym.dao.TraineeDAO;
 import com.yourcompany.gym.model.Trainee;
+import com.yourcompany.gym.service.impl.TraineeServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
