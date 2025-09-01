@@ -46,4 +46,6 @@ public interface TraineeService {
      * @param id ID стажера для удаления
      */
     void deleteById(Long id);
+
+
 }

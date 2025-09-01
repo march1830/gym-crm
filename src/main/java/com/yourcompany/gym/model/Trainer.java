@@ -1,51 +1,18 @@
 package com.yourcompany.gym.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
-@Entity // <-- ДОБАВЛЕНО: Указываем, что это JPA-сущность
+@Entity
+@Table(name = "trainers")
 public class Trainer extends User {
 
-    @Id // <-- ДОБАВЛЕНО: Указываем, что это поле - первичный ключ
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    // <-- ID здесь больше не нужен! Он наследуется от User.
 
-    // <-- ИСПРАВЛЕНО: Заменили String на объектную ссылку TrainingType
-    @ManyToOne
-    @JoinColumn(name = "specialization_id")
+    @ManyToOne(fetch = FetchType.LAZY) // Указываем связь "многие к одному"
+    @JoinColumn(name = "specialization_id") // По какой колонке будет связь
     private TrainingType specialization;
 
-    // Пустой конструктор для JPA
-    public Trainer() {
-    }
-
-    // Геттеры и сеттеры для id и specialization
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public TrainingType getSpecialization() {
-        return specialization;
-    }
-
-    public void setSpecialization(TrainingType specialization) {
-        this.specialization = specialization;
-    }
-
-    // <-- ДОБАВЛЕНО: Правильная реализация equals() и hashCode()
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass()!= o.getClass()) return false;
-        Trainer trainer = (Trainer) o;
-        return id!= null && id.equals(trainer.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
+    // Геттеры и сеттеры для specialization...
+    public TrainingType getSpecialization() { return specialization; }
+    public void setSpecialization(TrainingType specialization) { this.specialization = specialization; }
 }
