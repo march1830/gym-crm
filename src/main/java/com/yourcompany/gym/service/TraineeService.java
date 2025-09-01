@@ -1,18 +1,23 @@
 package com.yourcompany.gym.service;
 
 import com.yourcompany.gym.model.Trainee;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public interface TraineeService {
 
     /**
-     * Создает нового стажера в системе.
-     * В будущем здесь будет логика генерации пароля и username.
-     * @param trainee объект Trainee для сохранения
-     * @return сохраненный объект Trainee с присвоенным ID
+     * Создает новый профиль стажера в системе.
+     * Генерирует уникальный username и случайный пароль.
+     * @param firstName Имя стажера
+     * @param lastName Фамилия стажера
+     * @param dateOfBirth Дата рождения стажера
+     * @param address Адрес стажера (опционально)
+     * @return Сохраненный объект Trainee с присвоенным ID
      */
-    Trainee create(Trainee trainee);
+    Trainee createTraineeProfile(String firstName, String lastName, LocalDate dateOfBirth, String address);
 
     /**
      * Находит стажера по его уникальному идентификатору.

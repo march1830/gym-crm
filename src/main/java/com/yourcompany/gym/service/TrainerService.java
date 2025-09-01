@@ -1,17 +1,22 @@
 package com.yourcompany.gym.service;
 
 import com.yourcompany.gym.model.Trainer;
+import com.yourcompany.gym.model.TrainingType;
+
 import java.util.List;
 import java.util.Optional;
 
 public interface TrainerService {
 
     /**
-     * Создает нового тренера в системе.
-     * @param trainer объект Trainer для сохранения
-     * @return сохраненный объект Trainer с присвоенным ID
+     * Создает новый профиль тренера в системе.
+     * Генерирует уникальный username и случайный пароль.
+     * @param firstName Имя тренера
+     * @param lastName Фамилия тренера
+     * @param specialization Специализация тренера (тип тренировки)
+     * @return Сохраненный объект Trainer с присвоенным ID
      */
-    Trainer create(Trainer trainer);
+    Trainer createTrainerProfile(String firstName, String lastName, TrainingType specialization);
 
     /**
      * Находит тренера по его уникальному идентификатору.

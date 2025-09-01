@@ -14,5 +14,5 @@ public class Trainer extends User {
 
     // Геттеры и сеттеры для specialization...
     public TrainingType getSpecialization() { return specialization; }
-    public void setSpecialization(TrainingType specialization) { this.specialization = specialization; }
+    public void setSpecialization() { this.specialization = specialization; }
 }
