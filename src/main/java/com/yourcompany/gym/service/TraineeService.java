@@ -54,6 +54,12 @@ public interface TraineeService {
     Optional<Trainee> selectTraineeProfileByUsername(String username);
 
     /**
+     * Удаляет профиль стажера по его имени пользователя.
+     * @param username Имя пользователя для удаления.
+     */
+    void deleteProfileByUsername(String username);
+
+    /**
      * Возвращает список всех стажеров.
      * @return список всех стажеров
      */

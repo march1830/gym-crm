@@ -32,6 +32,10 @@ public class GymFacade {
         return traineeService.updateTraineeProfile(username, firstName, lastName, dateOfBirth, address, isActive);
     }
 
+    public void deleteTraineeByUsername(String username) {
+        traineeService.deleteProfileByUsername(username);
+    }
+
     // --- Методы для Trainer ---
     public Trainer createTrainer(String firstName, String lastName, TrainingType specialization) {
         // Просто вызываем соответствующий метод из сервиса

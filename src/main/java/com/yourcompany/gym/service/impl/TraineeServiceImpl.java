@@ -141,6 +141,23 @@ public class TraineeServiceImpl implements TraineeService {
 
     @Override
     @Transactional
+    public void deleteProfileByUsername(String username) {
+        log.info("Attempting to delete trainee profile with username: {}", username);
+
+        // Сначала находим стажера, чтобы убедиться, что он существует
+        Trainee traineeToDelete = traineeRepository.findByUsername(username)
+                .orElseThrow(() -> {
+                    log.error("Trainee with username {} not found for deletion.", username);
+                    return new RuntimeException("Trainee not found with username: " + username);
+                });
+
+        // Удаляем найденного стажера
+        traineeRepository.delete(traineeToDelete);
+        log.info("Successfully deleted trainee with username: {}", username);
+    }
+
+    @Override
+    @Transactional
     public void deleteById(Long id) {
         // Просто вызываем готовый метод из JpaRepository
         traineeRepository.deleteById(id);

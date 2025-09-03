@@ -12,7 +12,7 @@ public class Training {
     private Long id;
 
     // --- ГЛАВНОЕ ИЗМЕНЕНИЕ: Заменяем примитивы на объектные ссылки ---
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "trainee_id")
     private Trainee trainee;
 
