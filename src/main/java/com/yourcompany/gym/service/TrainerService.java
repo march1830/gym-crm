@@ -1,8 +1,10 @@
 package com.yourcompany.gym.service;
 
+import com.yourcompany.gym.model.Trainee;
 import com.yourcompany.gym.model.Trainer;
 import com.yourcompany.gym.model.TrainingType;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,7 +18,24 @@ public interface TrainerService {
      * @param specialization Специализация тренера (тип тренировки)
      * @return Сохраненный объект Trainer с присвоенным ID
      */
-    Trainer createTrainerProfile(String firstName, String lastName, TrainingType specialization);
+    Trainer createTrainerProfile(String firstName,
+                                 String lastName,
+                                 TrainingType specialization);
+
+    /**
+     * Обновляет профиль существующего тренера.
+     * @param username Имя пользователя тренера, которого нужно обновить.
+     * @param firstName Новое имя тренера.
+     * @param lastName Новая фамилия тренера.
+     * @param specialization Новая специализация тренера.
+     * @param isActive Новый статус активности.
+     * @return Обновленный объект Trainee.
+     */
+    Trainer updateTrainerProfile(String username,
+                                 String firstName,
+                                 String lastName,
+                                 TrainingType specialization,
+                                 boolean isActive);
 
     /**
      * Находит тренера по его уникальному идентификатору.
@@ -37,13 +56,6 @@ public interface TrainerService {
      * @return список всех тренеров
      */
     List<Trainer> findAll();
-
-    /**
-     * Обновляет данные существующего тренера.
-     * @param trainer объект Trainer с обновленными данными
-     * @return обновленный объект Trainer
-     */
-    Trainer update(Trainer trainer);
 
     /**
      * Удаляет тренера по его уникальному идентификатору.

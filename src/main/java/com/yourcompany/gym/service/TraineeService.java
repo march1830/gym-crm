@@ -17,7 +17,27 @@ public interface TraineeService {
      * @param address Адрес стажера (опционально)
      * @return Сохраненный объект Trainee с присвоенным ID
      */
-    Trainee createTraineeProfile(String firstName, String lastName, LocalDate dateOfBirth, String address);
+    Trainee createTraineeProfile(String firstName,
+                                 String lastName,
+                                 LocalDate dateOfBirth,
+                                 String address);
+
+    /**
+     * Обновляет профиль существующего стажера.
+     * @param username Имя пользователя стажера, которого нужно обновить.
+     * @param firstName Новое имя стажера.
+     * @param lastName Новая фамилия стажера.
+     * @param dateOfBirth Новая дата рождения.
+     * @param address Новый адрес.
+     * @param isActive Новый статус активности.
+     * @return Обновленный объект Trainee.
+     */
+    Trainee updateTraineeProfile(String username,
+                                 String firstName,
+                                 String lastName,
+                                 LocalDate dateOfBirth,
+                                 String address,
+                                 boolean isActive);
 
     /**
      * Находит стажера по его уникальному идентификатору.
@@ -38,13 +58,6 @@ public interface TraineeService {
      * @return список всех стажеров
      */
     List<Trainee> findAll();
-
-    /**
-     * Обновляет данные существующего стажера.
-     * @param trainee объект Trainee с обновленными данными
-     * @return обновленный объект Trainee
-     */
-    Trainee update(Trainee trainee);
 
     /**
      * Удаляет стажера по его уникальному идентификатору.

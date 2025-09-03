@@ -112,11 +112,31 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
-    @Transactional
-    public Trainee update(Trainee trainee) {
-        // Метод save() в JPA работает и для создания, и для обновления.
-        // Если у объекта trainee есть ID, JPA выполнит UPDATE, а не INSERT.
-        return traineeRepository.save(trainee);
+    @Transactional // Обновление - это операция записи, нужна транзакция
+    public Trainee updateTraineeProfile(String username, String firstName, String lastName, LocalDate dateOfBirth, String address, boolean isActive) {
+        log.info("Attempting to update profile for trainee with username: {}", username);
+
+        // 1. Находим существующего стажера в базе данных
+        Trainee traineeToUpdate = traineeRepository.findByUsername(username)
+                .orElseThrow(() -> {
+                    log.error("Trainee with username {} not found.", username);
+                    return new RuntimeException("Trainee not found with username: " + username); // В будущем здесь будет кастомный Exception
+                });
+
+        // 2. Обновляем его поля
+        traineeToUpdate.setFirstName(firstName);
+        traineeToUpdate.setLastName(lastName);
+        traineeToUpdate.setDateOfBirth(dateOfBirth);
+        traineeToUpdate.setAddress(address);
+        traineeToUpdate.setActive(isActive);
+
+        // 3. Сохраняем изменения
+        // Метод save() в JPA очень умный: если у объекта есть ID,
+        // он выполнит SQL-команду UPDATE, а не INSERT.
+        Trainee updatedTrainee = traineeRepository.save(traineeToUpdate);
+        log.info("Successfully updated profile for trainee with ID: {}", updatedTrainee.getId());
+
+        return updatedTrainee;
     }
 
     @Override

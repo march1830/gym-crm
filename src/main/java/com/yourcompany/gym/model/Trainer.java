@@ -13,6 +13,10 @@ public class Trainer extends User {
     private TrainingType specialization;
 
     // Геттеры и сеттеры для specialization...
-    public TrainingType getSpecialization() { return specialization; }
-    public void setSpecialization() { this.specialization = specialization; }
+    public TrainingType getSpecialization() {
+        return specialization;
+    }
+    public void setSpecialization(TrainingType specialization) {
+        this.specialization = specialization;
+    }
 }

@@ -1,5 +1,6 @@
 package com.yourcompany.gym.service.impl;
 
+import com.yourcompany.gym.model.Trainee;
 import com.yourcompany.gym.model.Trainer;
 import com.yourcompany.gym.model.TrainingType;
 import com.yourcompany.gym.repository.TrainerRepository;
@@ -9,6 +10,8 @@ import lombok.extern.slf4j.Slf4j; // <-- Для логирования
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;// <-- Для управления транзакциями
 
@@ -44,7 +47,7 @@ public class TrainerServiceImpl implements TrainerService {
         Trainer trainer = new Trainer();
         trainer.setFirstName(firstName);
         trainer.setLastName(lastName);
-        trainer.setSpecialization();
+        trainer.setSpecialization(specialization);
         trainer.setActive(true);
 
         // (Заметка #1) Генерация Username
@@ -111,11 +114,30 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
-    @Transactional
-    public Trainer update(Trainer trainee) {
-        // Метод save() в JPA работает и для создания, и для обновления.
-        // Если у объекта trainee есть ID, JPA выполнит UPDATE, а не INSERT.
-        return trainerRepository.save(trainee);
+    @Transactional // Обновление - это операция записи, нужна транзакция
+    public Trainer updateTrainerProfile(String username, String firstName, String lastName, TrainingType specialization, boolean isActive) {
+        log.info("Attempting to update profile for trainer with username: {}", username);
+
+        // 1. Находим существующего стажера в базе данных
+        Trainer trainerToUpdate = trainerRepository.findByUsername(username)
+                .orElseThrow(() -> {
+                    log.error("Trainer with username {} not found.", username);
+                    return new RuntimeException("Trainer not found with username: " + username); // В будущем здесь будет кастомный Exception
+                });
+
+        // 2. Обновляем его поля
+        trainerToUpdate.setFirstName(firstName);
+        trainerToUpdate.setLastName(lastName);
+        trainerToUpdate.setSpecialization(specialization);
+        trainerToUpdate.setActive(isActive);
+
+        // 3. Сохраняем изменения
+        // Метод save() в JPA очень умный: если у объекта есть ID,
+        // он выполнит SQL-команду UPDATE, а не INSERT.
+        Trainer updatedTrainer = trainerRepository.save(trainerToUpdate);
+        log.info("Successfully updated profile for trainee with ID: {}", updatedTrainer.getId());
+
+        return updatedTrainer;
     }
 
     @Override
