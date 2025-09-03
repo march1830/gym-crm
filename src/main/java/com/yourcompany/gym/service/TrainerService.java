@@ -26,11 +26,11 @@ public interface TrainerService {
     Optional<Trainer> findById(Long id);
 
     /**
-     * Находит тренера по его имени пользователя.
-     * @param username имя пользователя
-     * @return Optional, содержащий тренера, если он найден, иначе пустой Optional
+     * Находит профиль тренера по его имени пользователя.
+     * @param username Имя пользователя для поиска.
+     * @return Optional, содержащий профиль стажера, если найден.
      */
-    Optional<Trainer> findByUsername(String username);
+    Optional<Trainer> selectTraineeProfileByUsername(String username);;
 
     /**
      * Возвращает список всех тренеров.

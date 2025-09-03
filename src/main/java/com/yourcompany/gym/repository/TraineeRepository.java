@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface TraineeRepository extends JpaRepository<Trainee, Long> {
 
     // Этот метод будет искать стажера (Trainee) по полю username, которое находится в его родительской сущности (User).
-    Optional<Trainee> findByUserUsername(String username);
+    Optional<Trainee> findByUsername(String username);
 }

@@ -1,50 +1,53 @@
 package com.yourcompany.gym.service.impl;
 
-import com.yourcompany.gym.dao.TraineeDAO;
-import com.yourcompany.gym.dao.TrainerDAO;
-import com.yourcompany.gym.dao.TrainingDAO;
 import com.yourcompany.gym.model.Training;
+import com.yourcompany.gym.repository.TrainingRepository;
 import com.yourcompany.gym.service.TrainingService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class TrainingServiceImpl implements TrainingService {
 
-    private final TrainingDAO trainingDAO;
-    private final TraineeDAO traineeDAO;
-    private final TrainerDAO trainerDAO;
+    private final TrainingRepository trainingRepository;
 
     @Autowired
-    public TrainingServiceImpl(TrainingDAO trainingDAO, TraineeDAO traineeDAO, TrainerDAO trainerDAO) {
-        this.trainingDAO = trainingDAO;
-        this.traineeDAO = traineeDAO;
-        this.trainerDAO = trainerDAO;
+    public TrainingServiceImpl(TrainingRepository trainingRepository) {
+        this.trainingRepository = trainingRepository;
     }
 
     @Override
+    @Transactional
     public Training create(Training training) {
-        // Проверяем, что стажер существует
-        traineeDAO.findById(training.getTrainee().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Trainee with id " + training.getTrainee().getId() + " not found."));
+        log.info("Creating a new training for trainee ID: {} and trainer ID: {}",
+                training.getTrainee().getId(), training.getTrainer().getId());
 
-        // Проверяем, что тренер существует
-        trainerDAO.findById(training.getTrainer().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Trainer with id " + training.getTrainer().getId() + " not found."));
+        // Простая валидация
+        if (training == null) {
+            log.error("Attempted to create a null training.");
+            throw new IllegalArgumentException("Training object cannot be null.");
+        }
 
-        return trainingDAO.save(training);
+        Training savedTraining = trainingRepository.save(training);
+        log.info("Successfully created training with ID: {}", savedTraining.getId());
+        return savedTraining;
     }
 
     @Override
     public Optional<Training> findById(Long id) {
-        return trainingDAO.findById(id);
+        log.info("Finding training by ID: {}", id);
+        return trainingRepository.findById(id);
     }
 
     @Override
     public List<Training> findAll() {
-        return trainingDAO.findAll();
+        log.info("Finding all trainings.");
+        return trainingRepository.findAll();
     }
 }

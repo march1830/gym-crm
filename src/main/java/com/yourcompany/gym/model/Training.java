@@ -1,6 +1,6 @@
 package com.yourcompany.gym.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -8,8 +8,7 @@ import java.util.Objects;
 public class Training {
 
     @Id
-    // Примечание: здесь нет @GeneratedValue, так как мы договорились
-    // присваивать ID вручную через наш IdGenerator в DAO. Это нормально.
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     // --- ГЛАВНОЕ ИЗМЕНЕНИЕ: Заменяем примитивы на объектные ссылки ---

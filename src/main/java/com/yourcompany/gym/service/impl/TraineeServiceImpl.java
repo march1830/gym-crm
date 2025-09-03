@@ -99,9 +99,10 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
-    public Optional<Trainee> findByUsername(String username) {
-        // Вызываем наш кастомный метод из TraineeRepository
-        return traineeRepository.findByUserUsername(username);
+    public Optional<Trainee> selectTraineeProfileByUsername(String username) {
+        log.info("Selecting trainee profile by username: {}", username);
+        // Мы просто вызываем метод, который уже создали в нашем TraineeRepository.
+        return traineeRepository.findByUsername(username);
     }
 
     @Override

@@ -31,7 +31,7 @@ public interface TraineeService {
      * @param username имя пользователя
      * @return Optional, содержащий стажера, если он найден, иначе пустой Optional
      */
-    Optional<Trainee> findByUsername(String username);
+    Optional<Trainee> selectTraineeProfileByUsername(String username);
 
     /**
      * Возвращает список всех стажеров.

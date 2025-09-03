@@ -98,9 +98,10 @@ public class TrainerServiceImpl implements TrainerService {
     }
 
     @Override
-    public Optional<Trainer> findByUsername(String username) {
-        // Вызываем наш кастомный метод из TraineeRepository
-        return trainerRepository.findByUserUsername(username);
+    public Optional<Trainer> selectTraineeProfileByUsername(String username) {
+        log.info("Selecting trainer profile by username: {}", username);
+        // Мы просто вызываем метод, который уже создали в нашем TrainerRepository.
+        return trainerRepository.findByUsername(username);
     }
 
     @Override
