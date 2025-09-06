@@ -49,4 +49,23 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         log.info("Password changed successfully for user: {}", username);
     }
+    @Override
+    @Transactional
+    public void setActiveStatus(String username, boolean isActive) {
+        log.info("Setting active status to {} for user: {}", isActive, username);
+
+        // 1. Находим пользователя
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> {
+                    log.error("User with username {} not found.", username);
+                    return new RuntimeException("User not found: " + username);
+                });
+
+        // 2. Устанавливаем новый статус
+        user.setActive(isActive);
+
+        // 3. Сохраняем изменения
+        userRepository.save(user);
+        log.info("Successfully changed active status for user: {}", username);
+    }
 }

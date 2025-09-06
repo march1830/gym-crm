@@ -8,4 +8,11 @@ public interface UserService {
      * @param newPassword Новый пароль для установки.
      */
     void changePassword(String username, String oldPassword, String newPassword);
+
+    /**
+     * Изменяет статус активности пользователя.
+     * @param username ...
+     * @param isActive ...
+     */
+    void setActiveStatus(String username, boolean isActive);
 }

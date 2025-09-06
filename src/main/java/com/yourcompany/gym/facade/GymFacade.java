@@ -52,6 +52,9 @@ public class GymFacade {
     public void changeUserPassword(String username, String oldPassword, String newPassword) {
         userService.changePassword(username, oldPassword, newPassword);
     }
+    public void setUserActiveStatus(String username, boolean isActive) {
+        userService.setActiveStatus(username, isActive);
+    }
 }
 
 
