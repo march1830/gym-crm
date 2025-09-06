@@ -1,6 +1,7 @@
 package com.yourcompany.gym.service;
 
 import com.yourcompany.gym.model.Training;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -8,21 +9,18 @@ public interface TrainingService {
 
     /**
      * Создает новую тренировку в системе.
-     * @param training объект Training для сохранения
-     * @return сохраненный объект Training с присвоенным ID
+     * @param traineeUsername Имя пользователя стажера
+     * @param trainerUsername Имя пользователя тренера
+     * @param trainingName Название тренировки
+     * @param trainingDate Дата тренировки
+     * @param trainingDuration Длительность тренировки в минутах
+     * @return Созданный объект Training
      */
-    Training create(Training training);
+    Training addTraining(String traineeUsername, String trainerUsername, String trainingName, LocalDate trainingDate, int trainingDuration);
 
-    /**
-     * Находит тренировку по ее уникальному идентификатору.
-     * @param id ID тренировки
-     * @return Optional, содержащий тренировку, если она найдена, иначе пустой Optional
-     */
     Optional<Training> findById(Long id);
 
-    /**
-     * Возвращает список всех тренировок.
-     * @return список всех тренировок
-     */
     List<Training> findAll();
+
+    List<Training> getTraineeTrainingsByCriteria(String username, LocalDate fromDate, LocalDate toDate, String trainerName, String trainingType);
 }
