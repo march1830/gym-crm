@@ -5,6 +5,7 @@ import com.yourcompany.gym.model.Trainer;
 import com.yourcompany.gym.model.TrainingType;
 import com.yourcompany.gym.service.TraineeService;
 import com.yourcompany.gym.service.TrainerService;
+import com.yourcompany.gym.service.UserService;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -14,11 +15,13 @@ public class GymFacade {
 
     private final TraineeService traineeService;
     private final TrainerService trainerService;
+    private final UserService userService;
 
     // Внедряем наши сервисы через конструктор
-    public GymFacade(TraineeService traineeService, TrainerService trainerService) {
+    public GymFacade(TraineeService traineeService, TrainerService trainerService, UserService userService) {
         this.traineeService = traineeService;
         this.trainerService = trainerService;
+        this.userService = userService;
     }
 
     // --- Методы для Trainee ---
@@ -44,6 +47,10 @@ public class GymFacade {
 
     public Trainer updateTrainer(String username, String firstName, String lastName, TrainingType specialization, boolean isActive) {
         return trainerService.updateTrainerProfile(username, firstName, lastName, specialization, isActive);
+    }
+    // --- Общие методы для User ---
+    public void changeUserPassword(String username, String oldPassword, String newPassword) {
+        userService.changePassword(username, oldPassword, newPassword);
     }
 }
 

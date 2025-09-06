@@ -6,6 +6,7 @@ import com.yourcompany.gym.repository.UserRepository;
 import com.yourcompany.gym.service.TraineeService;
 import lombok.extern.slf4j.Slf4j; // <-- Для логирования
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional; // <-- Для управления транзакциями
 import java.util.List;
@@ -21,12 +22,14 @@ public class TraineeServiceImpl implements TraineeService {
     // --- Новые зависимости от репозиториев ---
     private final TraineeRepository traineeRepository;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // Используем constructor-based injection, как требовалось в задании
     @Autowired
-    public TraineeServiceImpl(TraineeRepository traineeRepository, UserRepository userRepository) {
+    public TraineeServiceImpl(TraineeRepository traineeRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.traineeRepository = traineeRepository;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // Здесь мы реализуем наш метод
@@ -55,9 +58,7 @@ public class TraineeServiceImpl implements TraineeService {
 
         // (Заметка #1) Генерация Password
         String password = generateRandomPassword(10);
-        // ВАЖНО: В реальном проекте здесь нужно хешировать пароль перед установкой!
-        // trainee.setPassword(passwordEncoder.encode(password));
-        trainee.setPassword(password);
+        trainee.setPassword(passwordEncoder.encode(password));
 
         // Сохраняем нового стажера в базу данных
         Trainee savedTrainee = traineeRepository.save(trainee);
