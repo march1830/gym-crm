@@ -62,4 +62,6 @@ public interface TrainerService {
      * @param id ID тренера для удаления
      */
     void deleteById(Long id);
+
+    List<Trainer> getUnassignedTrainers(String traineeUsername);
 }

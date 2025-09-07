@@ -51,4 +51,32 @@ public class TrainingRepositoryCustomImpl implements TrainingRepositoryCustom {
         // 6. Выполняем запрос
         return entityManager.createQuery(query).getResultList();
     }
+    @Override
+    public List<Training> findTrainingsByTrainerUsernameAndCriteria(
+            String username, LocalDate fromDate, LocalDate toDate, String traineeName) {
+
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Training> query = cb.createQuery(Training.class);
+        Root<Training> training = query.from(Training.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+
+        // Изменили фильтр на trainer.username
+        predicates.add(cb.equal(training.get("trainer").get("username"), username));
+
+        if (fromDate != null) {
+            predicates.add(cb.greaterThanOrEqualTo(training.get("trainingDate"), fromDate));
+        }
+        if (toDate != null) {
+            predicates.add(cb.lessThanOrEqualTo(training.get("trainingDate"), toDate));
+        }
+        // Изменили фильтр на trainee.firstName
+        if (traineeName != null && !traineeName.isBlank()) {
+            predicates.add(cb.equal(training.get("trainee").get("firstName"), traineeName));
+        }
+
+        query.where(cb.and(predicates.toArray(new Predicate[0])));
+
+        return entityManager.createQuery(query).getResultList();
+    }
 }

@@ -12,4 +12,10 @@ public interface TrainingRepositoryCustom {
             String trainerName,
             String trainingType
     );
+    List<Training> findTrainingsByTrainerUsernameAndCriteria(
+            String username,
+            LocalDate fromDate,
+            LocalDate toDate,
+            String traineeName
+    );
 }

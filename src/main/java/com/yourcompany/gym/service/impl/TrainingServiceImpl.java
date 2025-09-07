@@ -81,4 +81,9 @@ public class TrainingServiceImpl implements TrainingService {
         log.info("Searching trainings for trainee {} with criteria.", username);
         return trainingRepository.findTrainingsByTraineeUsernameAndCriteria(username, fromDate, toDate, trainerName, trainingType);
     }
+    @Override
+    public List<Training> getTrainerTrainingsByCriteria(String username, LocalDate fromDate, LocalDate toDate, String traineeName) {
+        log.info("Searching trainings for trainer {} with criteria.", username);
+        return trainingRepository.findTrainingsByTrainerUsernameAndCriteria(username, fromDate, toDate, traineeName);
+    }
 }

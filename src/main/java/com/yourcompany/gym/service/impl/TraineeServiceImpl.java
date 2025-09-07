@@ -1,7 +1,9 @@
 package com.yourcompany.gym.service.impl;
 
 import com.yourcompany.gym.model.Trainee;
+import com.yourcompany.gym.model.Trainer;
 import com.yourcompany.gym.repository.TraineeRepository;
+import com.yourcompany.gym.repository.TrainerRepository;
 import com.yourcompany.gym.repository.UserRepository;
 import com.yourcompany.gym.service.TraineeService;
 import lombok.extern.slf4j.Slf4j; // <-- Для логирования
@@ -9,11 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional; // <-- Для управления транзакциями
+
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
 import java.security.SecureRandom;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Slf4j // <-- Аннотация Lombok для автоматического создания логгера
 @Service
@@ -21,13 +26,15 @@ public class TraineeServiceImpl implements TraineeService {
 
     // --- Новые зависимости от репозиториев ---
     private final TraineeRepository traineeRepository;
+    private final TrainerRepository trainerRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     // Используем constructor-based injection, как требовалось в задании
     @Autowired
-    public TraineeServiceImpl(TraineeRepository traineeRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public TraineeServiceImpl(TraineeRepository traineeRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, TrainerRepository trainerRepository) {
         this.traineeRepository = traineeRepository;
+        this.trainerRepository = trainerRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -162,5 +169,28 @@ public class TraineeServiceImpl implements TraineeService {
     public void deleteById(Long id) {
         // Просто вызываем готовый метод из JpaRepository
         traineeRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public Set<Trainer> updateTrainersList(String traineeUsername, List<String> trainerUsernames) {
+        log.info("Updating trainers list for trainee: {}", traineeUsername);
+
+        // 1. Находим стажера
+        Trainee trainee = traineeRepository.findByUsername(traineeUsername)
+                .orElseThrow(() -> new RuntimeException("Trainee not found: " + traineeUsername));
+
+        // 2. Находим всех тренеров по списку их username
+        List<Trainer> trainersList = trainerRepository.findAllByUserUsernameIn(trainerUsernames);
+        Set<Trainer> trainers = new HashSet<>(trainersList);
+
+        // 3. Устанавливаем новый список тренеров для стажера
+        trainee.setTrainers(trainers);
+
+        // 4. Сохраняем стажера. JPA сам разберется с промежуточной таблицей.
+        traineeRepository.save(trainee);
+        log.info("Successfully updated trainers list for trainee: {}", traineeUsername);
+
+        return trainee.getTrainers();
     }
 }

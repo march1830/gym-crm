@@ -23,4 +23,6 @@ public interface TrainingService {
     List<Training> findAll();
 
     List<Training> getTraineeTrainingsByCriteria(String username, LocalDate fromDate, LocalDate toDate, String trainerName, String trainingType);
+
+    List<Training> getTrainerTrainingsByCriteria(String username, LocalDate fromDate, LocalDate toDate, String traineeName);
 }

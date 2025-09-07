@@ -1,10 +1,12 @@
 package com.yourcompany.gym.service;
 
 import com.yourcompany.gym.model.Trainee;
+import com.yourcompany.gym.model.Trainer;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface TraineeService {
 
@@ -70,6 +72,14 @@ public interface TraineeService {
      * @param id ID стажера для удаления
      */
     void deleteById(Long id);
+
+    /**
+     * Обновляет список тренеров для указанного стажера.
+     * @param traineeUsername Имя пользователя стажера.
+     * @param trainerUsernames Список имен пользователей тренеров.
+     * @return Обновленный набор тренеров для данного стажера.
+     */
+    Set<Trainer> updateTrainersList(String traineeUsername, List<String> trainerUsernames);
 
 
 }

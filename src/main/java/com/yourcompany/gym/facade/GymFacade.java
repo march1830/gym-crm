@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Component // Помечаем фасад как компонент, чтобы Spring мог его найти и создать
 public class GymFacade {
@@ -70,6 +71,16 @@ public class GymFacade {
     public List<Training> getTraineeTrainings(String username, LocalDate fromDate, LocalDate toDate, String trainerName, String trainingType) {
         return trainingService.getTraineeTrainingsByCriteria(username, fromDate, toDate, trainerName, trainingType);
     }
+    public List<Training> getTrainerTrainings(String username, LocalDate fromDate, LocalDate toDate, String traineeName) {
+        return trainingService.getTrainerTrainingsByCriteria(username, fromDate, toDate, traineeName);
+    }
+    public List<Trainer> getUnassignedTrainers(String traineeUsername) {
+        return trainerService.getUnassignedTrainers(traineeUsername);
+    }
+    public Set<Trainer> updateTraineeTrainers(String traineeUsername, List<String> trainerUsernames) {
+        return traineeService.updateTrainersList(traineeUsername, trainerUsernames);
+    }
+
 }
 
 

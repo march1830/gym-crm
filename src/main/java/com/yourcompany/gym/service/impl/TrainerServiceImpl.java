@@ -3,6 +3,8 @@ package com.yourcompany.gym.service.impl;
 import com.yourcompany.gym.model.Trainee;
 import com.yourcompany.gym.model.Trainer;
 import com.yourcompany.gym.model.TrainingType;
+import com.yourcompany.gym.model.User;
+import com.yourcompany.gym.repository.TraineeRepository;
 import com.yourcompany.gym.repository.TrainerRepository;
 import com.yourcompany.gym.repository.UserRepository;
 import com.yourcompany.gym.service.TrainerService;
@@ -17,6 +19,8 @@ import java.util.List;
 import java.util.Optional;// <-- Для управления транзакциями
 
 import java.security.SecureRandom;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j // <-- Аннотация Lombok для автоматического создания логгера
 @Service
@@ -24,13 +28,15 @@ public class TrainerServiceImpl implements TrainerService {
 
     // --- Новые зависимости от репозиториев ---
     private final TrainerRepository trainerRepository;
+    private final TraineeRepository traineeRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     // Используем constructor-based injection, как требовалось в задании
     @Autowired
-    public TrainerServiceImpl(TrainerRepository trainerRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public TrainerServiceImpl(TrainerRepository trainerRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, TraineeRepository traineeRepository) {
         this.trainerRepository = trainerRepository;
+        this.traineeRepository = traineeRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -147,5 +153,27 @@ public class TrainerServiceImpl implements TrainerService {
     public void deleteById(Long id) {
         // Просто вызываем готовый метод из JpaRepository
         trainerRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Trainer> getUnassignedTrainers(String traineeUsername) {
+        log.info("Finding unassigned trainers for trainee: {}", traineeUsername);
+
+        // 1. Находим всех активных тренеров в системе
+        List<Trainer> allActiveTrainers = trainerRepository.findAllByIsActive(true);
+
+        // 2. Находим нашего стажера, чтобы получить список его текущих тренеров
+        Trainee trainee = traineeRepository.findByUsername(traineeUsername)
+                .orElseThrow(() -> new RuntimeException("Trainee not found: " + traineeUsername));
+
+        // 3. Получаем множество ID уже назначенных тренеров
+        Set<Long> assignedTrainerIds = trainee.getTrainers().stream()
+                .map(User::getId)
+                .collect(Collectors.toSet());
+
+        // 4. Фильтруем список всех тренеров, оставляя только тех, кого нет в списке назначенных
+        return allActiveTrainers.stream()
+                .filter(trainer -> !assignedTrainerIds.contains(trainer.getId()))
+                .toList();
     }
 }
