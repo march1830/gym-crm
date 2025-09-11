@@ -27,24 +27,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public boolean checkCredentials(String username, String password) {
         log.info("Checking credentials for username: {}", username);
 
-        // 1. Находим пользователя по username
+
         Optional<User> userOptional = userRepository.findByUsername(username);
 
         if (userOptional.isEmpty()) {
             log.warn("Authentication failed: User not found with username '{}'", username);
-            return false; // Пользователь не найден
+            return false;
         }
 
         User user = userOptional.get();
 
-        // 2. Сравниваем предоставленный пароль с хешем в базе
-        // passwordEncoder.matches() сам выполняет "магию" BCrypt
+
         if (passwordEncoder.matches(password, user.getPassword())) {
             log.info("Authentication successful for username: {}", username);
-            return true; // Пароли совпадают
+            return true;
         } else {
             log.warn("Authentication failed: Invalid password for username '{}'", username);
-            return false; // Пароли не совпадают
+            return false;
         }
     }
 }

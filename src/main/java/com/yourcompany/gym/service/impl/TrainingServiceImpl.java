@@ -38,18 +38,18 @@ public class TrainingServiceImpl implements TrainingService {
         log.info("Attempting to add training '{}' for trainee '{}' with trainer '{}'",
                 trainingName, traineeUsername, trainerUsername);
 
-        // 1. Находим стажера по username
+
         Trainee trainee = traineeRepository.findByUsername(traineeUsername)
                 .orElseThrow(() -> new RuntimeException("Trainee not found with username: " + traineeUsername));
 
-        // 2. Находим тренера по username
+
         Trainer trainer = trainerRepository.findByUsername(trainerUsername)
                 .orElseThrow(() -> new RuntimeException("Trainer not found with username: " + trainerUsername));
 
-        // 3. Получаем тип тренировки из специализации тренера
+
         TrainingType trainingType = trainer.getSpecialization();
 
-        // 4. Создаем новый объект тренировки
+
         Training newTraining = new Training();
         newTraining.setTrainee(trainee);
         newTraining.setTrainer(trainer);
@@ -58,7 +58,7 @@ public class TrainingServiceImpl implements TrainingService {
         newTraining.setTrainingDate(trainingDate);
         newTraining.setTrainingDuration(trainingDuration);
 
-        // 5. Сохраняем тренировку в базу данных
+
         Training savedTraining = trainingRepository.save(newTraining);
         log.info("Successfully added training with ID: {}", savedTraining.getId());
 

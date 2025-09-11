@@ -1,26 +1,25 @@
 package com.yourcompany.gym.model;
 
-import jakarta.persistence.*; // <-- Добавлены импорты для JPA
+import jakarta.persistence.*;
 import java.util.List;
 import java.util.Objects;
 
-@Entity // <-- 1. Указываем, что это сущность для базы данных
-@Table(name = "training_types") // <-- Указываем имя таблицы
+@Entity
+@Table(name = "training_types")
 public class TrainingType {
 
-    @Id // <-- 2. Добавляем поле ID как первичный ключ
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "training_type_name", nullable = false, unique = true)
     private String trainingTypeName;
 
-    // 3. Добавляем обратную связь к Training
-    // `mappedBy` - это прямое исправление твоей последней ошибки
+
     @OneToMany(mappedBy = "trainingType", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Training> trainings;
 
-    // Геттеры и сеттеры для новых полей
+
     public Long getId() {
         return id;
     }
@@ -37,7 +36,7 @@ public class TrainingType {
         this.trainings = trainings;
     }
 
-    // --- Твои существующие методы ---
+
     public String getTrainingTypeName() {
         return trainingTypeName;
     }

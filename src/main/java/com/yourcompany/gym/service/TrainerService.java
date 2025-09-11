@@ -1,35 +1,35 @@
 package com.yourcompany.gym.service;
 
-import com.yourcompany.gym.model.Trainee;
 import com.yourcompany.gym.model.Trainer;
 import com.yourcompany.gym.model.TrainingType;
+import com.yourcompany.gym.dto.TrainerDTO;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
 
 public interface TrainerService {
 
     /**
-     * Создает новый профиль тренера в системе.
-     * Генерирует уникальный username и случайный пароль.
-     * @param firstName Имя тренера
-     * @param lastName Фамилия тренера
-     * @param specialization Специализация тренера (тип тренировки)
-     * @return Сохраненный объект Trainer с присвоенным ID
+     * Creates a new trainer profile in the system.
+     * Generates a unique username and a random password.
+     * @param firstName The trainer's first name.
+     * @param lastName The trainer's last name.
+     * @param specialization The trainer's specialization (training type).
+     * @return The saved Trainer object with an assigned ID.
      */
-    Trainer createTrainerProfile(String firstName,
+    TrainerDTO createTrainerProfile(String firstName,
                                  String lastName,
                                  TrainingType specialization);
 
     /**
-     * Обновляет профиль существующего тренера.
-     * @param username Имя пользователя тренера, которого нужно обновить.
-     * @param firstName Новое имя тренера.
-     * @param lastName Новая фамилия тренера.
-     * @param specialization Новая специализация тренера.
-     * @param isActive Новый статус активности.
-     * @return Обновленный объект Trainee.
+     * Updates the profile of an existing trainer.
+     * @param username The username of the trainer to update.
+     * @param firstName The trainer's new first name.
+     * @param lastName The trainer's new last name.
+     * @param specialization The trainer's new specialization.
+     * @param isActive The new active status.
+     * @return The updated Trainer object.
      */
     Trainer updateTrainerProfile(String username,
                                  String firstName,
@@ -38,30 +38,36 @@ public interface TrainerService {
                                  boolean isActive);
 
     /**
-     * Находит тренера по его уникальному идентификатору.
-     * @param id ID тренера
-     * @return Optional, содержащий тренера, если он найден, иначе пустой Optional
+     * Finds a trainer by their unique identifier.
+     * @param id The ID of the trainer.
+     * @return an Optional containing the trainer if found, otherwise an empty Optional.
      */
     Optional<Trainer> findById(Long id);
 
     /**
-     * Находит профиль тренера по его имени пользователя.
-     * @param username Имя пользователя для поиска.
-     * @return Optional, содержащий профиль стажера, если найден.
+     * Finds a trainer profile by their username.
+     * @param username The username to search for.
+     * @return an Optional containing the trainer's profile if found.
      */
-    Optional<Trainer> selectTraineeProfileByUsername(String username);;
+    Optional<Trainer> selectTrainerProfileByUsername(String username);
 
     /**
-     * Возвращает список всех тренеров.
-     * @return список всех тренеров
+     * Returns a list of all trainers.
+     * @return a list of all trainers.
      */
     List<Trainer> findAll();
 
     /**
-     * Удаляет тренера по его уникальному идентификатору.
-     * @param id ID тренера для удаления
+     * Deletes a trainer by their unique identifier.
+     * @param id The ID of the trainer to delete.
      */
     void deleteById(Long id);
 
+    /**
+     * Gets a list of active trainers who are not assigned to the specified trainee.
+     * @param traineeUsername The username of the trainee.
+     * @return A list of unassigned trainers.
+     */
     List<Trainer> getUnassignedTrainers(String traineeUsername);
+
 }

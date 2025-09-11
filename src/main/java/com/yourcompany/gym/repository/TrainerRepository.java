@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface TrainerRepository extends JpaRepository<Trainer, Long> {
 
-    // Аналогично, этот метод будет искать тренера (Trainer) по его username.
+
     Optional<Trainer> findByUsername(String username);
     List<Trainer> findAllByIsActive(boolean isActive);
     List<Trainer> findAllByUserUsernameIn(List<String> usernames);

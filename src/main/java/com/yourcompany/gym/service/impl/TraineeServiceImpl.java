@@ -1,16 +1,18 @@
 package com.yourcompany.gym.service.impl;
 
+import com.yourcompany.gym.dto.TraineeDTO;
 import com.yourcompany.gym.model.Trainee;
 import com.yourcompany.gym.model.Trainer;
 import com.yourcompany.gym.repository.TraineeRepository;
 import com.yourcompany.gym.repository.TrainerRepository;
 import com.yourcompany.gym.repository.UserRepository;
 import com.yourcompany.gym.service.TraineeService;
-import lombok.extern.slf4j.Slf4j; // <-- Для логирования
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // <-- Для управления транзакциями
+import org.springframework.transaction.annotation.Transactional;
+import com.yourcompany.gym.utils.ValidationUtils;
 
 import java.util.HashSet;
 import java.util.List;
@@ -20,17 +22,18 @@ import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.util.Set;
 
-@Slf4j // <-- Аннотация Lombok для автоматического создания логгера
+@Slf4j
 @Service
 public class TraineeServiceImpl implements TraineeService {
 
-    // --- Новые зависимости от репозиториев ---
+
     private final TraineeRepository traineeRepository;
     private final TrainerRepository trainerRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private static final int PASSWORD_LENGTH = 10;
 
-    // Используем constructor-based injection, как требовалось в задании
+
     @Autowired
     public TraineeServiceImpl(TraineeRepository traineeRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, TrainerRepository trainerRepository) {
         this.traineeRepository = traineeRepository;
@@ -39,16 +42,20 @@ public class TraineeServiceImpl implements TraineeService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // Здесь мы реализуем наш метод
+
+    // Note: The return type of the method must also be changed in the TraineeService interface
+// from "Trainee" to "TraineeDTO".
     @Override
-    @Transactional // (Заметка #15) Вся операция будет одной транзакцией
-    public Trainee createTraineeProfile(String firstName, String lastName, LocalDate dateOfBirth, String address) {
+    @Transactional
+    public TraineeDTO createTraineeProfile(String firstName, String lastName, LocalDate dateOfBirth, String address) {
         log.info("Attempting to create a trainee profile for: {} {}", firstName, lastName);
 
-        // (Заметка #3) Валидация обязательных полей
-        if (firstName == null || lastName == null || firstName.isBlank() || lastName.isBlank()) {
-            log.error("Validation failed: First name and last name are required.");
-            throw new IllegalArgumentException("First name and last name are required.");
+        // Remark #3: Validation logic is moved to a separate utility class.
+        try {
+            ValidationUtils.validateRequiredFields(firstName, lastName);
+        } catch (IllegalArgumentException e) {
+            log.error("Validation failed for creating trainee profile: {}", e.getMessage());
+            throw e; // Re-throw the exception after logging
         }
 
         Trainee trainee = new Trainee();
@@ -58,30 +65,28 @@ public class TraineeServiceImpl implements TraineeService {
         trainee.setAddress(address);
         trainee.setActive(true);
 
-        // (Заметка #1) Генерация Username
         String username = generateUsername(firstName, lastName);
         trainee.setUsername(username);
         log.debug("Generated username: {}", username);
 
-        // (Заметка #1) Генерация Password
-        String password = generateRandomPassword(10);
+        String password = generateRandomPassword(PASSWORD_LENGTH);
         trainee.setPassword(passwordEncoder.encode(password));
 
-        // Сохраняем нового стажера в базу данных
         Trainee savedTrainee = traineeRepository.save(trainee);
         log.info("Successfully created trainee with ID: {} and username: {}", savedTrainee.getId(), savedTrainee.getUsername());
 
-        // Возвращаем созданный объект (в идеале - DTO без пароля)
-        return savedTrainee;
+        // Remark #2: Convert the saved entity to a DTO before returning it.
+        // This prevents leaking sensitive data like the hashed password.
+        return TraineeDTO.fromEntity(savedTrainee);
     }
 
-    // --- Вспомогательные приватные методы ---
+
 
     private String generateUsername(String firstName, String lastName) {
         String baseUsername = firstName.toLowerCase() + "." + lastName.toLowerCase();
         String finalUsername = baseUsername;
         int suffix = 1;
-        // Проверяем, существует ли уже такой username в базе
+
         while (userRepository.existsByUsername(finalUsername)) {
             finalUsername = baseUsername + suffix++;
         }
@@ -98,49 +103,47 @@ public class TraineeServiceImpl implements TraineeService {
         return sb.toString();
     }
 
-    // --- РЕАЛИЗАЦИЯ ОСТАЛЬНЫХ МЕТОДОВ ИНТЕРФЕЙСА ---
+
 
     @Override
     public Optional<Trainee> findById(Long id) {
-        // Просто вызываем готовый метод из JpaRepository
+
         return traineeRepository.findById(id);
     }
 
     @Override
     public Optional<Trainee> selectTraineeProfileByUsername(String username) {
         log.info("Selecting trainee profile by username: {}", username);
-        // Мы просто вызываем метод, который уже создали в нашем TraineeRepository.
+
         return traineeRepository.findByUsername(username);
     }
 
     @Override
     public List<Trainee> findAll() {
-        // Просто вызываем готовый метод из JpaRepository
+
         return traineeRepository.findAll();
     }
 
     @Override
-    @Transactional // Обновление - это операция записи, нужна транзакция
+    @Transactional
     public Trainee updateTraineeProfile(String username, String firstName, String lastName, LocalDate dateOfBirth, String address, boolean isActive) {
         log.info("Attempting to update profile for trainee with username: {}", username);
 
-        // 1. Находим существующего стажера в базе данных
+
         Trainee traineeToUpdate = traineeRepository.findByUsername(username)
                 .orElseThrow(() -> {
                     log.error("Trainee with username {} not found.", username);
-                    return new RuntimeException("Trainee not found with username: " + username); // В будущем здесь будет кастомный Exception
+                    return new RuntimeException("Trainee not found with username: " + username);
                 });
 
-        // 2. Обновляем его поля
+
         traineeToUpdate.setFirstName(firstName);
         traineeToUpdate.setLastName(lastName);
         traineeToUpdate.setDateOfBirth(dateOfBirth);
         traineeToUpdate.setAddress(address);
         traineeToUpdate.setActive(isActive);
 
-        // 3. Сохраняем изменения
-        // Метод save() в JPA очень умный: если у объекта есть ID,
-        // он выполнит SQL-команду UPDATE, а не INSERT.
+
         Trainee updatedTrainee = traineeRepository.save(traineeToUpdate);
         log.info("Successfully updated profile for trainee with ID: {}", updatedTrainee.getId());
 
@@ -152,14 +155,14 @@ public class TraineeServiceImpl implements TraineeService {
     public void deleteProfileByUsername(String username) {
         log.info("Attempting to delete trainee profile with username: {}", username);
 
-        // Сначала находим стажера, чтобы убедиться, что он существует
+
         Trainee traineeToDelete = traineeRepository.findByUsername(username)
                 .orElseThrow(() -> {
                     log.error("Trainee with username {} not found for deletion.", username);
                     return new RuntimeException("Trainee not found with username: " + username);
                 });
 
-        // Удаляем найденного стажера
+
         traineeRepository.delete(traineeToDelete);
         log.info("Successfully deleted trainee with username: {}", username);
     }
@@ -167,7 +170,7 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     @Transactional
     public void deleteById(Long id) {
-        // Просто вызываем готовый метод из JpaRepository
+
         traineeRepository.deleteById(id);
     }
 
@@ -176,21 +179,23 @@ public class TraineeServiceImpl implements TraineeService {
     public Set<Trainer> updateTrainersList(String traineeUsername, List<String> trainerUsernames) {
         log.info("Updating trainers list for trainee: {}", traineeUsername);
 
-        // 1. Находим стажера
+
         Trainee trainee = traineeRepository.findByUsername(traineeUsername)
                 .orElseThrow(() -> new RuntimeException("Trainee not found: " + traineeUsername));
 
-        // 2. Находим всех тренеров по списку их username
+
         List<Trainer> trainersList = trainerRepository.findAllByUserUsernameIn(trainerUsernames);
         Set<Trainer> trainers = new HashSet<>(trainersList);
 
-        // 3. Устанавливаем новый список тренеров для стажера
+
         trainee.setTrainers(trainers);
 
-        // 4. Сохраняем стажера. JPA сам разберется с промежуточной таблицей.
+
         traineeRepository.save(trainee);
         log.info("Successfully updated trainers list for trainee: {}", traineeUsername);
 
         return trainee.getTrainers();
     }
+
+
 }

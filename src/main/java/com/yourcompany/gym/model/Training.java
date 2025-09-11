@@ -4,14 +4,14 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
-@Entity // <-- ДОБАВЛЕНО: Указываем, что это JPA-сущность
+@Entity
 public class Training {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // --- ГЛАВНОЕ ИЗМЕНЕНИЕ: Заменяем примитивы на объектные ссылки ---
+
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "trainee_id")
     private Trainee trainee;
@@ -29,9 +29,9 @@ public class Training {
     private LocalDate trainingDate;
     private int trainingDuration;
 
-    // --- УДАЛЕНЫ СТАРЫЕ ПОЛЯ: traineeId, trainerId ---
 
-    // Геттеры и сеттеры для ВСЕХ полей
+
+
     public Long getId() {
         return id;
     }
@@ -88,7 +88,7 @@ public class Training {
         this.trainingDuration = trainingDuration;
     }
 
-    // --- ИСПРАВЛЕНО: equals() и hashCode() теперь основаны на ID ---
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -102,7 +102,7 @@ public class Training {
         return getClass().hashCode();
     }
 
-    // toString() можно оставить для отладки, но лучше обновить
+
     @Override
     public String toString() {
         return "Training{" +

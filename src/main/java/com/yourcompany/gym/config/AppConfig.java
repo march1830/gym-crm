@@ -26,7 +26,7 @@ import java.util.Properties;
 @EnableJpaRepositories("com.yourcompany.gym.repository")
 public class AppConfig {
 
-    // --- 1. Настройка подключения к базе данных (DataSource) ---
+
     @Bean
     public DataSource dataSource(
             @Value("${spring.datasource.url}") String url,
@@ -39,7 +39,7 @@ public class AppConfig {
         return dataSource;
     }
 
-    // --- 2. Настройка JPA и Hibernate (EntityManagerFactory) ---
+
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource,
                                                                        @Value("${spring.jpa.hibernate.dialect}") String dialect,
@@ -47,7 +47,7 @@ public class AppConfig {
                                                                        @Value("${spring.jpa.show-sql}") boolean showSql) {
         LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
         emf.setDataSource(dataSource);
-        emf.setPackagesToScan("com.yourcompany.gym.model"); // Указываем, где лежат наши Entity
+        emf.setPackagesToScan("com.yourcompany.gym.model");
         emf.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 
         Properties jpaProperties = new Properties();
@@ -59,14 +59,14 @@ public class AppConfig {
         return emf;
     }
 
-    // --- 3. Настройка Менеджера Транзакций ---
+
     @Bean
     public PlatformTransactionManager transactionManager(LocalContainerEntityManagerFactoryBean entityManagerFactory) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(entityManagerFactory.getObject());
         return transactionManager;
     }
-    // --- 4. Настройка Хешировщика Паролей ---
+   -
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

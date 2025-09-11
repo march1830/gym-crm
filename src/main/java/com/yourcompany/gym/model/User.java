@@ -1,14 +1,14 @@
 package com.yourcompany.gym.model;
 
-import jakarta.persistence.*; // Используем новый пакет jakarta
+import jakarta.persistence.*;
 import java.util.Objects;
 
-@Entity // Говорим JPA, что это сущность, которая будет иметь свою таблицу
-@Table(name = "users") // Явно указываем имя главной таблицы
-@Inheritance(strategy = InheritanceType.JOINED) // <-- ВАЖНО: Стратегия наследования
-public abstract class User { // <-- СДЕЛАЛИ КЛАСС АБСТРАКТНЫМ
+@Entity
+@Table(name = "users")
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class User {
 
-    @Id // <-- ID теперь здесь, в родительском классе
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

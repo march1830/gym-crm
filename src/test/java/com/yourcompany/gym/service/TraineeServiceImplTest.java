@@ -1,7 +1,9 @@
 package com.yourcompany.gym.service;
 
 import com.yourcompany.gym.model.Trainee;
+import com.yourcompany.gym.model.Trainer;
 import com.yourcompany.gym.repository.TraineeRepository;
+import com.yourcompany.gym.repository.TrainerRepository;
 import com.yourcompany.gym.repository.UserRepository;
 import com.yourcompany.gym.service.impl.TraineeServiceImpl;
 import org.junit.jupiter.api.Assertions;
@@ -11,54 +13,88 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class) // Включаем поддержку Mockito
+@ExtendWith(MockitoExtension.class)
 class TraineeServiceImplTest {
 
-    // Создаем "мок" (пустышку) для репозитория, который мы будем контролировать
     @Mock
     private TraineeRepository traineeRepository;
-
+    @Mock
+    private TrainerRepository trainerRepository; // Needed for updateTrainersList
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder; // Assuming it's needed for other tests
 
-    // Создаем реальный объект сервиса и автоматически внедряем в него моки выше
     @InjectMocks
     private TraineeServiceImpl traineeService;
 
+    // Your existing createTraineeProfile test...
+
     @Test
-    void createTraineeProfile_shouldGenerateUniqueUsername_whenBaseUsernameExists() {
-        // 1. Arrange (Подготовка)
-        String firstName = "John";
-        String lastName = "Doe";
-        String baseUsername = "john.doe";
-        String expectedUsername = "john.doe1";
+    void updateProfile_ShouldUpdateTraineeDetails() {
+        // Arrange
+        String username = "test.trainee";
+        Trainee existingTrainee = new Trainee();
+        existingTrainee.setUsername(username);
+        existingTrainee.setFirstName("OldName");
 
-        // "Обучаем" моки: говорим, как они должны себя вести
-        // Когда userRepository спросят про "john.doe", он должен ответить "true" (занято)
-        when(userRepository.existsByUsername(baseUsername)).thenReturn(true);
-        // Когда спросят про "john.doe1", он должен ответить "false" (свободно)
-        when(userRepository.existsByUsername(expectedUsername)).thenReturn(false);
-        // Когда traineeRepository попросят сохранить любого Trainee, он должен просто вернуть того же Trainee
-        when(traineeRepository.save(any(Trainee.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(traineeRepository.findByUsername(username)).thenReturn(Optional.of(existingTrainee));
+        when(traineeRepository.save(any(Trainee.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        // 2. Act (Действие)
-        // Вызываем реальный метод нашего сервиса
-        traineeService.createTraineeProfile(firstName, lastName, null, null);
+        // Act
+        Trainee updated = traineeService.updateTraineeProfile(username, "NewName", "LastName", LocalDate.now(), "Address", true);
 
-        // 3. Assert (Проверка)
-        // Создаем "перехватчик" аргументов, чтобы поймать, какой именно объект Trainee был отправлен на сохранение
-        ArgumentCaptor<Trainee> traineeCaptor = ArgumentCaptor.forClass(Trainee.class);
-        // Проверяем, что метод save() был вызван ровно 1 раз
-        verify(traineeRepository).save(traineeCaptor.capture());
+        // Assert
+        Assertions.assertEquals("NewName", updated.getFirstName());
+        Assertions.assertEquals("Address", updated.getAddress());
+        verify(traineeRepository).save(existingTrainee);
+    }
 
-        // Получаем перехваченный объект Trainee
-        Trainee savedTrainee = traineeCaptor.getValue();
-        // Проверяем, что у него сгенерировался правильный username
-        Assertions.assertEquals(expectedUsername, savedTrainee.getUsername());
+    @Test
+    void deleteProfileByUsername_ShouldDeleteTrainee() {
+        // Arrange
+        String username = "test.trainee";
+        Trainee traineeToDelete = new Trainee();
+        when(traineeRepository.findByUsername(username)).thenReturn(Optional.of(traineeToDelete));
+
+        // Act
+        traineeService.deleteProfileByUsername(username);
+
+        // Assert
+        verify(traineeRepository).delete(traineeToDelete);
+    }
+
+    @Test
+    void updateTrainersList_ShouldUpdateTraineeTrainers() {
+        // Arrange
+        String traineeUsername = "test.trainee";
+        List<String> trainerUsernames = List.of("test.trainer1", "test.trainer2");
+
+        Trainee trainee = new Trainee();
+        Trainer trainer1 = new Trainer();
+        trainer1.setUsername("test.trainer1");
+        Trainer trainer2 = new Trainer();
+        trainer2.setUsername("test.trainer2");
+        List<Trainer> trainers = List.of(trainer1, trainer2);
+
+        when(traineeRepository.findByUsername(traineeUsername)).thenReturn(Optional.of(trainee));
+        when(trainerRepository.findAllByUserUsernameIn(trainerUsernames)).thenReturn(trainers);
+
+        // Act
+        Set<Trainer> updatedTrainers = traineeService.updateTrainersList(traineeUsername, trainerUsernames);
+
+        // Assert
+        Assertions.assertEquals(2, updatedTrainers.size());
+        verify(traineeRepository).save(trainee);
     }
 }
