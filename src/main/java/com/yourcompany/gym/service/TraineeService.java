@@ -1,5 +1,6 @@
 package com.yourcompany.gym.service;
 
+import com.yourcompany.gym.dto.RegistrationResponse;
 import com.yourcompany.gym.dto.TraineeDTO;
 import com.yourcompany.gym.model.Trainee;
 import com.yourcompany.gym.model.Trainer;
@@ -20,10 +21,10 @@ public interface TraineeService {
      * @param address The trainee's address (optional).
      * @return The saved Trainee object with an assigned ID.
      */
-    TraineeDTO createTraineeProfile(String firstName,
-                                    String lastName,
-                                    LocalDate dateOfBirth,
-                                    String address);
+    RegistrationResponse createTraineeProfile(String firstName,
+                                              String lastName,
+                                              LocalDate dateOfBirth,
+                                              String address);
 
     /**
      * Updates the profile of an existing trainee.

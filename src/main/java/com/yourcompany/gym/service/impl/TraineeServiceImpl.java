@@ -1,6 +1,6 @@
 package com.yourcompany.gym.service.impl;
 
-import com.yourcompany.gym.dto.TraineeDTO;
+import com.yourcompany.gym.dto.RegistrationResponse;
 import com.yourcompany.gym.model.Trainee;
 import com.yourcompany.gym.model.Trainer;
 import com.yourcompany.gym.repository.TraineeRepository;
@@ -47,7 +47,7 @@ public class TraineeServiceImpl implements TraineeService {
 // from "Trainee" to "TraineeDTO".
     @Override
     @Transactional
-    public TraineeDTO createTraineeProfile(String firstName, String lastName, LocalDate dateOfBirth, String address) {
+    public RegistrationResponse createTraineeProfile(String firstName, String lastName, LocalDate dateOfBirth, String address) {
         log.info("Attempting to create a trainee profile for: {} {}", firstName, lastName);
 
         // Remark #3: Validation logic is moved to a separate utility class.
@@ -77,7 +77,7 @@ public class TraineeServiceImpl implements TraineeService {
 
         // Remark #2: Convert the saved entity to a DTO before returning it.
         // This prevents leaking sensitive data like the hashed password.
-        return TraineeDTO.fromEntity(savedTrainee);
+        return new RegistrationResponse(savedTrainee.getUsername(), password);
     }
 
 

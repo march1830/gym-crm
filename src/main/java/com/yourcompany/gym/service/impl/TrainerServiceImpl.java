@@ -1,5 +1,6 @@
 package com.yourcompany.gym.service.impl;
 
+import com.yourcompany.gym.dto.RegistrationResponse;
 import com.yourcompany.gym.dto.TrainerDTO;
 import com.yourcompany.gym.model.Trainee;
 import com.yourcompany.gym.model.Trainer;
@@ -7,18 +8,19 @@ import com.yourcompany.gym.model.TrainingType;
 import com.yourcompany.gym.model.User;
 import com.yourcompany.gym.repository.TraineeRepository;
 import com.yourcompany.gym.repository.TrainerRepository;
+import com.yourcompany.gym.repository.TrainingTypeRepository;
 import com.yourcompany.gym.repository.UserRepository;
 import com.yourcompany.gym.service.TrainerService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import lombok.extern.slf4j.Slf4j; // <-- Для логирования
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.yourcompany.gym.utils.ValidationUtils;
 
-import java.time.LocalDate;
+
 import java.util.List;
-import java.util.Optional;// <-- Для управления транзакциями
+import java.util.Optional;
 
 import java.security.SecureRandom;
 import java.util.Set;
@@ -33,13 +35,16 @@ public class TrainerServiceImpl implements TrainerService {
     private final TraineeRepository traineeRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TrainingTypeRepository trainingTypeRepository;
+
     private static final int PASSWORD_LENGTH = 10;
 
 
     @Autowired
-    public TrainerServiceImpl(TrainerRepository trainerRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, TraineeRepository traineeRepository) {
+    public TrainerServiceImpl(TrainerRepository trainerRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, TraineeRepository traineeRepository, TrainingTypeRepository trainingTypeRepository) {
         this.trainerRepository = trainerRepository;
         this.traineeRepository = traineeRepository;
+        this.trainingTypeRepository = trainingTypeRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -47,40 +52,31 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     @Transactional
-    public TrainerDTO createTrainerProfile(String firstName, String lastName, TrainingType specialization) {
+    public RegistrationResponse createTrainerProfile(String firstName, String lastName, Long specializationId) {
         log.info("Attempting to create a trainer profile for: {} {}", firstName, lastName);
 
+        ValidationUtils.validateRequiredFields(firstName, lastName, specializationId);
 
-        // Remark #3: Validation logic is moved to a separate utility class.
-        try {
-            ValidationUtils.validateRequiredFields(firstName, lastName);
-        } catch (IllegalArgumentException e) {
-            log.error("Validation failed for creating trainee profile: {}", e.getMessage());
-            throw e; // Re-throw the exception after logging
-        }
+        // Find the specialization by its ID
+        TrainingType specialization = trainingTypeRepository.findById(specializationId)
+                .orElseThrow(() -> new RuntimeException("TrainingType not found with id: " + specializationId));
 
         Trainer trainer = new Trainer();
         trainer.setFirstName(firstName);
         trainer.setLastName(lastName);
-        trainer.setSpecialization(specialization);
+        trainer.setSpecialization(specialization); // Set the found object
         trainer.setActive(true);
-
 
         String username = generateUsername(firstName, lastName);
         trainer.setUsername(username);
-        log.debug("Generated username: {}", username);
 
-
-        String password = generateRandomPassword(PASSWORD_LENGTH);
+        String password = generateRandomPassword();
         trainer.setPassword(passwordEncoder.encode(password));
-        trainer.setPassword(password);
-
 
         Trainer savedTrainer = trainerRepository.save(trainer);
-        log.info("Successfully created trainer with ID: {} and username: {}", savedTrainer.getId(), savedTrainer.getUsername());
+        log.info("Successfully created trainer with ID: {}", savedTrainer.getId());
 
-
-        return TrainerDTO.fromEntity(savedTrainer);
+        return new RegistrationResponse(savedTrainer.getUsername(), password);
     }
 
 
@@ -96,11 +92,11 @@ public class TrainerServiceImpl implements TrainerService {
         return finalUsername;
     }
 
-    private String generateRandomPassword(int length) {
+    private String generateRandomPassword() {
         final String CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         SecureRandom random = new SecureRandom();
-        StringBuilder sb = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
+        StringBuilder sb = new StringBuilder(PASSWORD_LENGTH);
+        for (int i = 0; i < PASSWORD_LENGTH; i++) {
             sb.append(CHARS.charAt(random.nextInt(CHARS.length())));
         }
         return sb.toString();

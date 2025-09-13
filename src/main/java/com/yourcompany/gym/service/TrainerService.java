@@ -1,5 +1,6 @@
 package com.yourcompany.gym.service;
 
+import com.yourcompany.gym.dto.RegistrationResponse;
 import com.yourcompany.gym.model.Trainer;
 import com.yourcompany.gym.model.TrainingType;
 import com.yourcompany.gym.dto.TrainerDTO;
@@ -15,12 +16,12 @@ public interface TrainerService {
      * Generates a unique username and a random password.
      * @param firstName The trainer's first name.
      * @param lastName The trainer's last name.
-     * @param specialization The trainer's specialization (training type).
+     * @param specializationId The trainer's specialization (training type).
      * @return The saved Trainer object with an assigned ID.
      */
-    TrainerDTO createTrainerProfile(String firstName,
-                                 String lastName,
-                                 TrainingType specialization);
+    RegistrationResponse createTrainerProfile(String firstName,
+                                              String lastName,
+                                              Long specializationId);
 
     /**
      * Updates the profile of an existing trainer.

@@ -22,7 +22,18 @@ public class Trainer extends User {
     )
     private Set<Trainer> trainers;
 
+    @ManyToMany(mappedBy = "trainers", fetch = FetchType.LAZY)
+    private Set<Trainee> trainees;
 
+    // Getter
+    public Set<Trainee> getTrainees() {
+        return trainees;
+    }
+
+    // Setter
+    public void setTrainees(Set<Trainee> trainees) {
+        this.trainees = trainees;
+    }
 
     public Set<Trainer> getTrainers() {
         return trainers;
