@@ -1,14 +1,14 @@
 package com.yourcompany.gym.controller;
 
-import com.yourcompany.gym.dto.LoginRequest;
-import com.yourcompany.gym.dto.TrainerProfileResponse;
-import com.yourcompany.gym.dto.UpdateActiveStatusRequest;
-import com.yourcompany.gym.dto.UpdateTrainerRequest;
+import com.yourcompany.gym.dto.*;
 import com.yourcompany.gym.facade.GymFacade;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/trainers") // Base URL for all trainer-related operations
@@ -55,5 +55,20 @@ public class TrainerController {
         gymFacade.setUserActiveStatus(username, authRequest.password(), request.isActive());
 
         return ResponseEntity.ok().build();
+    }
+    @GetMapping("/{username}/trainings")
+    public ResponseEntity<List<TrainingResponseDTO>> getTrainerTrainings(
+            @PathVariable String username,
+            @RequestParam(required = false) LocalDate fromDate,
+            @RequestParam(required = false) LocalDate toDate,
+            @RequestParam(required = false) String traineeName,
+            @RequestBody LoginRequest authRequest) {
+
+        if (!username.equals(authRequest.username())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        List<TrainingResponseDTO> trainings = gymFacade.getTrainerTrainings(username, authRequest.password(), fromDate, toDate, traineeName);
+        return ResponseEntity.ok(trainings);
     }
 }

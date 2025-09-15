@@ -1,14 +1,14 @@
 package com.yourcompany.gym.controller;
 
-import com.yourcompany.gym.dto.LoginRequest; // We'll reuse this for authentication
-import com.yourcompany.gym.dto.TraineeProfileResponse;
-import com.yourcompany.gym.dto.UpdateActiveStatusRequest;
-import com.yourcompany.gym.dto.UpdateTraineeRequest;
+import com.yourcompany.gym.dto.*;
 import com.yourcompany.gym.facade.GymFacade;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/trainees") // Base URL for all trainee-related operations
@@ -78,5 +78,49 @@ public class TraineeController {
         gymFacade.setUserActiveStatus(username, authRequest.password(), request.isActive());
 
         return ResponseEntity.ok().build();
+    }
+    @GetMapping("/{username}/trainers/unassigned")
+    public ResponseEntity<List<TrainerInfo>> getUnassignedTrainers(
+            @PathVariable String username,
+            @RequestBody LoginRequest authRequest) {
+
+        // We need to ensure the user making the request is the trainee in question
+        if (!username.equals(authRequest.username())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        // We need a new method in the facade for this
+        List<TrainerInfo> unassignedTrainers = gymFacade.getUnassignedTrainersForTrainee(username, authRequest.password());
+
+        return ResponseEntity.ok(unassignedTrainers);
+    }
+    @PutMapping("/{username}/trainers")
+    public ResponseEntity<List<TrainerInfo>> updateTraineeTrainers(
+            @PathVariable String username,
+            @Valid @RequestBody UpdateTraineeTrainersRequest request,
+            @RequestBody LoginRequest authRequest) {
+
+        if (!username.equals(authRequest.username())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        var updatedTrainers = gymFacade.updateTraineeTrainers(username, authRequest.password(), request.trainerUsernames());
+        return ResponseEntity.ok(updatedTrainers);
+    }
+    @GetMapping("/{username}/trainings")
+    public ResponseEntity<List<TrainingResponseDTO>> getTraineeTrainings(
+            @PathVariable String username,
+            @RequestParam(required = false) LocalDate fromDate,
+            @RequestParam(required = false) LocalDate toDate,
+            @RequestParam(required = false) String trainerName,
+            @RequestParam(required = false) String trainingType,
+            @RequestBody LoginRequest authRequest) {
+
+        if (!username.equals(authRequest.username())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        List<TrainingResponseDTO> trainings = gymFacade.getTraineeTrainings(username, authRequest.password(), fromDate, toDate, trainerName, trainingType);
+        return ResponseEntity.ok(trainings);
     }
 }
