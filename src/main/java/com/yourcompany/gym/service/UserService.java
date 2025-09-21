@@ -4,10 +4,9 @@ public interface UserService {
     /**
      * Changes a user's password after verifying the old password.
      * @param username The user's username.
-     * @param oldPassword The old password for verification.
      * @param newPassword The new password to set.
      */
-    void changePassword(String username, String oldPassword, String newPassword);
+    void changePassword(String username, String newPassword);
 
     /**
      * Changes the active status of a user.

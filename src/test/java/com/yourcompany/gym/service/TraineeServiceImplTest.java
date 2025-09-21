@@ -88,7 +88,7 @@ class TraineeServiceImplTest {
         List<Trainer> trainers = List.of(trainer1, trainer2);
 
         when(traineeRepository.findByUsername(traineeUsername)).thenReturn(Optional.of(trainee));
-        when(trainerRepository.findAllByUserUsernameIn(trainerUsernames)).thenReturn(trainers);
+        when(trainerRepository.findAllByUsernameIn(trainerUsernames)).thenReturn(trainers);
 
         // Act
         Set<Trainer> updatedTrainers = traineeService.updateTrainersList(traineeUsername, trainerUsernames);

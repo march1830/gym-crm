@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -56,6 +57,11 @@ class TrainingServiceImplTest {
 
         when(traineeRepository.findByUsername(traineeUsername)).thenReturn(Optional.of(trainee));
         when(trainerRepository.findByUsername(trainerUsername)).thenReturn(Optional.of(trainer));
+        when(trainingRepository.save(any(Training.class))).thenAnswer(invocation -> {
+            Training trainingToSave = invocation.getArgument(0);
+            trainingToSave.setId(1L); // Set a dummy ID for the test
+            return trainingToSave;
+        });
 
         // Act
         trainingService.addTraining(traineeUsername, trainerUsername, trainingName, trainingDate, duration);

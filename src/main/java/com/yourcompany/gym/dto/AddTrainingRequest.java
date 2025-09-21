@@ -8,7 +8,8 @@ import java.time.LocalDate;
 // DTO for the add training request
 public record AddTrainingRequest(
         @NotBlank String traineeUsername,
-        @NotBlank String password,
+        // The 'password' field has been removed.
+        // Authentication is now handled by Spring Security via HttpBasic.
         @NotBlank String trainerUsername,
         @NotBlank String trainingName,
         @NotNull LocalDate trainingDate,

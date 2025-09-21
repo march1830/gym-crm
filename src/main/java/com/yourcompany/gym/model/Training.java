@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
+@Table(name = "trainings")
 public class Training {
 
     @Id
@@ -25,10 +26,14 @@ public class Training {
     private TrainingType trainingType;
     // ----------------------------------------------------------------
 
+    @Column(name = "training_name") // This field maps to the 'training_name' column
     private String trainingName;
-    private LocalDate trainingDate;
-    private int trainingDuration;
 
+    @Column(name = "training_date") // This field maps to the 'training_date' column
+    private LocalDate trainingDate;
+
+    @Column(name = "training_duration") // This field maps to the 'training_duration' column
+    private int trainingDuration;
 
 
 

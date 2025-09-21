@@ -28,14 +28,12 @@ public interface TrainerService {
      * @param username The username of the trainer to update.
      * @param firstName The trainer's new first name.
      * @param lastName The trainer's new last name.
-     * @param specialization The trainer's new specialization.
      * @param isActive The new active status.
      * @return The updated Trainer object.
      */
     Trainer updateTrainerProfile(String username,
                                  String firstName,
                                  String lastName,
-                                 TrainingType specialization,
                                  boolean isActive);
 
     /**

@@ -70,6 +70,7 @@ public class TraineeServiceImpl implements TraineeService {
         log.debug("Generated username: {}", username);
 
         String password = generateRandomPassword(PASSWORD_LENGTH);
+        log.info(">>>> Generated password for user '{}': {}", username, password);
         trainee.setPassword(passwordEncoder.encode(password));
 
         Trainee savedTrainee = traineeRepository.save(trainee);
@@ -77,7 +78,7 @@ public class TraineeServiceImpl implements TraineeService {
 
         // Remark #2: Convert the saved entity to a DTO before returning it.
         // This prevents leaking sensitive data like the hashed password.
-        return new RegistrationResponse(savedTrainee.getUsername(), password);
+        return new RegistrationResponse(savedTrainee.getUsername());
     }
 
 
@@ -112,10 +113,11 @@ public class TraineeServiceImpl implements TraineeService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Trainee> selectTraineeProfileByUsername(String username) {
-        log.info("Selecting trainee profile by username: {}", username);
-
-        return traineeRepository.findByUsername(username);
+        Optional<Trainee> traineeOptional = traineeRepository.findByUsername(username);
+        traineeOptional.ifPresent(trainee -> trainee.getTrainers().size());
+        return traineeOptional;
     }
 
     @Override
@@ -184,7 +186,7 @@ public class TraineeServiceImpl implements TraineeService {
                 .orElseThrow(() -> new RuntimeException("Trainee not found: " + traineeUsername));
 
 
-        List<Trainer> trainersList = trainerRepository.findAllByUserUsernameIn(trainerUsernames);
+        List<Trainer> trainersList = trainerRepository.findAllByUsernameIn(trainerUsernames);
         Set<Trainer> trainers = new HashSet<>(trainersList);
 
 

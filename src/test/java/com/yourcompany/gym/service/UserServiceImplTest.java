@@ -1,11 +1,8 @@
 package com.yourcompany.gym.service;
 
-package com.yourcompany.gym.service.impl;
-
 import com.yourcompany.gym.model.Trainee;
 import com.yourcompany.gym.model.User;
 import com.yourcompany.gym.repository.UserRepository;
-import com.yourcompany.gym.service.AuthenticationService;
 import com.yourcompany.gym.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -27,30 +24,31 @@ class UserServiceImplTest {
     private UserRepository userRepository;
     @Mock
     private PasswordEncoder passwordEncoder;
-    @Mock
-    private AuthenticationService authenticationService;
+
+    // We no longer need AuthenticationService here, so it's removed.
 
     @InjectMocks
     private UserServiceImpl userService;
 
     @Test
-    void changePassword_ShouldChangePassword_WhenOldPasswordIsValid() {
+    void changePassword_ShouldChangePasswordSuccessfully() {
         // Arrange
         String username = "test.user";
-        String oldPassword = "oldPassword";
         String newPassword = "newPassword";
         String newHashedPassword = "newHashedPassword";
 
-        // FIXED: Instantiating a concrete subclass
         User user = new Trainee();
         user.setUsername(username);
 
-        when(authenticationService.checkCredentials(username, oldPassword)).thenReturn(true);
+        // This stub is no longer needed and has been removed:
+        // when(authenticationService.checkCredentials(username, oldPassword)).thenReturn(true);
+
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
         when(passwordEncoder.encode(newPassword)).thenReturn(newHashedPassword);
 
         // Act
-        userService.changePassword(username, oldPassword, newPassword);
+        // We now call the updated method with two arguments.
+        userService.changePassword(username, newPassword);
 
         // Assert
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
@@ -60,22 +58,8 @@ class UserServiceImplTest {
         Assertions.assertEquals(newHashedPassword, savedUser.getPassword());
     }
 
-    @Test
-    void changePassword_ShouldThrowException_WhenOldPasswordIsInvalid() {
-        // Arrange
-        String username = "test.user";
-        String oldPassword = "wrongOldPassword";
-        String newPassword = "newPassword";
-
-        when(authenticationService.checkCredentials(username, oldPassword)).thenReturn(false);
-
-        // Act & Assert
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            userService.changePassword(username, oldPassword, newPassword);
-        });
-
-        verify(userRepository, never()).save(any(User.class));
-    }
+    // This test for invalid old password is no longer relevant, as the service
+    // doesn't check the old password anymore. It can be removed.
 
     @Test
     void setActiveStatus_ShouldUpdateUserStatus() {
@@ -83,9 +67,8 @@ class UserServiceImplTest {
         String username = "test.user";
         boolean newStatus = false;
 
-        // FIXED: Instantiating a concrete subclass
         User user = new Trainee();
-        user.setActive(true); // Initial status is active
+        user.setActive(true);
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 

@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping("/api/register")
@@ -30,7 +33,16 @@ public class RegistrationController {
                 request.dateOfBirth(),
                 request.address()
         );
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+
+        // This block creates the URL for the newly created resource.
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path("/api/trainees/{username}")
+                .buildAndExpand(response.username())
+                .toUri();
+
+        // We return a 201 Created status with the Location header and the response body.
+        return ResponseEntity.created(location).body(response);
     }
 
     @PostMapping("/trainer")
@@ -42,6 +54,15 @@ public class RegistrationController {
                 request.specializationId()
         );
 
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+
+        // This block creates the URL for the newly created resource.
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path("/api/trainers/{username}")
+                .buildAndExpand(response.username())
+                .toUri();
+
+        // We return a 201 Created status with the Location header and the response body.
+        return ResponseEntity.created(location).body(response);
     }
 }

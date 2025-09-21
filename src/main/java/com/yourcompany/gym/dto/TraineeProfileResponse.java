@@ -2,6 +2,7 @@ package com.yourcompany.gym.dto;
 
 import com.yourcompany.gym.model.Trainee;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import java.util.stream.Collectors;
 public record TraineeProfileResponse(
         String firstName,
         String lastName,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         LocalDate dateOfBirth,
         String address,
         boolean isActive,

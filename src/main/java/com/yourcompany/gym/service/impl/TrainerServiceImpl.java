@@ -71,12 +71,13 @@ public class TrainerServiceImpl implements TrainerService {
         trainer.setUsername(username);
 
         String password = generateRandomPassword();
+        log.info(">>>> Generated password for user '{}': {}", username, password);
         trainer.setPassword(passwordEncoder.encode(password));
 
         Trainer savedTrainer = trainerRepository.save(trainer);
         log.info("Successfully created trainer with ID: {}", savedTrainer.getId());
 
-        return new RegistrationResponse(savedTrainer.getUsername(), password);
+        return new RegistrationResponse(savedTrainer.getUsername());
     }
 
 
@@ -125,25 +126,25 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     @Transactional
-    public Trainer updateTrainerProfile(String username, String firstName, String lastName, TrainingType specialization, boolean isActive) {
+// The method signature is updated, specialization is no longer an argument.
+    public Trainer updateTrainerProfile(String username, String firstName, String lastName, boolean isActive) {
         log.info("Attempting to update profile for trainer with username: {}", username);
-
 
         Trainer trainerToUpdate = trainerRepository.findByUsername(username)
                 .orElseThrow(() -> {
                     log.error("Trainer with username {} not found.", username);
-                    return new RuntimeException("Trainer not found with username: " + username); // В будущем здесь будет кастомный Exception
+                    return new RuntimeException("Trainer not found with username: " + username);
                 });
-
 
         trainerToUpdate.setFirstName(firstName);
         trainerToUpdate.setLastName(lastName);
-        trainerToUpdate.setSpecialization(specialization);
         trainerToUpdate.setActive(isActive);
 
+        // We no longer call trainerToUpdate.setSpecialization().
+        // This ensures the existing specialization remains unchanged.
 
         Trainer updatedTrainer = trainerRepository.save(trainerToUpdate);
-        log.info("Successfully updated profile for trainee with ID: {}", updatedTrainer.getId());
+        log.info("Successfully updated profile for trainer with ID: {}", updatedTrainer.getId());
 
         return updatedTrainer;
     }
