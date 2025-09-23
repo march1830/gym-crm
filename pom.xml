@@ -32,7 +32,6 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- Spring Core -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
@@ -51,7 +50,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Spring security -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
@@ -63,7 +61,6 @@
             <version>${spring.security.version}</version>
         </dependency>
 
-        <!-- JPA -->
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
@@ -76,7 +73,6 @@
             <version>${spring.security.version}</version>
         </dependency>
 
-        <!-- Hibernate -->
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
@@ -98,7 +94,6 @@
             <version>3.0.2</version>
         </dependency>
 
-        <!-- DB + Flyway -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -116,7 +111,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Tomcat (встроенный) -->
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-core</artifactId>
@@ -128,7 +122,6 @@
             <version>10.1.25</version>
         </dependency>
 
-        <!-- Jackson -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -140,7 +133,6 @@
             <version>${jackson.version}</version>
         </dependency>
 
-        <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -152,7 +144,6 @@
             <version>1.5.6</version>
         </dependency>
 
-        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -160,7 +151,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Tests -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -177,14 +167,14 @@
 
     <build>
         <plugins>
-            <!-- Compiling -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
                     <release>21</release>
-                    <parameters>true</parameters> </configuration>
+                    <parameters>true</parameters>
+                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -50,7 +50,7 @@ public class TraineeController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         gymFacade.deleteTrainee(username);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{username}/status")

@@ -7,6 +7,7 @@ import com.yourcompany.gym.model.Training;
 import com.yourcompany.gym.model.TrainingType;
 import com.yourcompany.gym.repository.TrainingTypeRepository;
 import com.yourcompany.gym.service.*;
+import com.yourcompany.gym.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,7 +49,7 @@ public class GymFacade {
     @Transactional(readOnly = true)
     public TraineeProfileResponse getTraineeProfile(String username) {
         Trainee trainee = traineeService.selectTraineeProfileByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Trainee not found: " + username));
+                .orElseThrow(() -> new ResourceNotFoundException("Trainee not found: " + username));
         return TraineeProfileResponse.fromEntity(trainee);
     }
 
@@ -89,7 +90,7 @@ public class GymFacade {
     @Transactional(readOnly = true)
     public TrainerProfileResponse getTrainerProfile(String username) {
         Trainer trainer = trainerService.selectTrainerProfileByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Trainer not found: " + username));
+                .orElseThrow(() -> new ResourceNotFoundException("Trainer not found: " + username));
         return TrainerProfileResponse.fromEntity(trainer);
     }
 

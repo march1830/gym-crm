@@ -27,4 +27,8 @@ public class LoginController {
         gymFacade.changeUserPassword(principal.getName(), request.newPassword());
         return ResponseEntity.ok().build();
     }
+    @GetMapping("/login")
+    public ResponseEntity<Void> loginCheck() {
+        return ResponseEntity.ok().build();
+    }
 }

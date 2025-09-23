@@ -1,5 +1,6 @@
 package com.yourcompany.gym.config;
 
+import com.yourcompany.gym.exception.CustomAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -8,7 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher; // <-- ADD THIS IMPORT
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -18,10 +19,15 @@ public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-    public SecurityConfig(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+    public SecurityConfig(UserDetailsService userDetailsService,
+                          PasswordEncoder passwordEncoder,
+                          CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
+        System.out.println(">>>> SecurityConfig БИН СОЗДАН и получил EntryPoint! <<<<");
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
     }
 
     @Bean
@@ -38,12 +44,12 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // We now use an explicit AntPathRequestMatcher to resolve the ambiguity.
                         .requestMatchers(new AntPathRequestMatcher("/api/register/**", "POST")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/training-types", "GET")).permitAll()
                         .anyRequest().authenticated()
                 )
-                .httpBasic(withDefaults());
+                .httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint));
+
         return http.build();
     }
 }
