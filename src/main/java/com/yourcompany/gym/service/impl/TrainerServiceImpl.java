@@ -17,7 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.yourcompany.gym.utils.ValidationUtils;
-
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,17 +37,22 @@ public class TrainerServiceImpl implements TrainerService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final TrainingTypeRepository trainingTypeRepository;
+    private final Counter trainerRegistrationCounter;
 
     private static final int PASSWORD_LENGTH = 10;
 
 
     @Autowired
-    public TrainerServiceImpl(TrainerRepository trainerRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, TraineeRepository traineeRepository, TrainingTypeRepository trainingTypeRepository) {
+    public TrainerServiceImpl(TrainerRepository trainerRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, TraineeRepository traineeRepository, TrainingTypeRepository trainingTypeRepository, MeterRegistry meterRegistry) {
         this.trainerRepository = trainerRepository;
         this.traineeRepository = traineeRepository;
         this.trainingTypeRepository = trainingTypeRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.trainerRegistrationCounter = Counter.builder("user.registrations.total")
+                .tag("user_type", "trainee") // Метка, чтобы отличать стажеров от тренеров
+                .description("Total number of registered trainees")
+                .register(meterRegistry);
     }
 
 
@@ -76,6 +82,8 @@ public class TrainerServiceImpl implements TrainerService {
 
         Trainer savedTrainer = trainerRepository.save(trainer);
         log.info("Successfully created trainer with ID: {}", savedTrainer.getId());
+
+        this.trainerRegistrationCounter.increment();
 
         return new RegistrationResponse(savedTrainer.getUsername());
     }

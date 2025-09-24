@@ -43,9 +43,15 @@ public class SecurityConfig {
         http
                 .authenticationProvider(authenticationProvider())
                 .csrf(csrf -> csrf.disable())
+                .exceptionHandling(e -> e.authenticationEntryPoint(customAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
+
                         .requestMatchers(new AntPathRequestMatcher("/api/register/**", "POST")).permitAll()
+
                         .requestMatchers(new AntPathRequestMatcher("/api/training-types", "GET")).permitAll()
+
+                        .requestMatchers(new AntPathRequestMatcher("/actuator/**")).permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .httpBasic(basic -> basic.authenticationEntryPoint(customAuthenticationEntryPoint));

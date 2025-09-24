@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.yourcompany.gym.utils.ValidationUtils;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 
 import java.util.HashSet;
 import java.util.List;
@@ -32,14 +34,19 @@ public class TraineeServiceImpl implements TraineeService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private static final int PASSWORD_LENGTH = 10;
+    private final Counter traineeRegistrationCounter;
 
 
     @Autowired
-    public TraineeServiceImpl(TraineeRepository traineeRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, TrainerRepository trainerRepository) {
+    public TraineeServiceImpl(TraineeRepository traineeRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, TrainerRepository trainerRepository, MeterRegistry meterRegistry) {
         this.traineeRepository = traineeRepository;
         this.trainerRepository = trainerRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.traineeRegistrationCounter = Counter.builder("user.registrations.total")
+                .tag("user_type", "trainee")
+                .description("Total number of registered trainees")
+                .register(meterRegistry);
     }
 
 
@@ -75,6 +82,8 @@ public class TraineeServiceImpl implements TraineeService {
 
         Trainee savedTrainee = traineeRepository.save(trainee);
         log.info("Successfully created trainee with ID: {} and username: {}", savedTrainee.getId(), savedTrainee.getUsername());
+
+        this.traineeRegistrationCounter.increment();
 
         // Remark #2: Convert the saved entity to a DTO before returning it.
         // This prevents leaking sensitive data like the hashed password.
