@@ -1,24 +1,41 @@
 package com.yourcompany.gym.model;
 
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
+@Entity
+@Table(name = "trainings")
 public class Training {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private long traineeId;
-    private long trainerId;
+
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "trainee_id")
+    private Trainee trainee;
+
+    @ManyToOne
+    @JoinColumn(name = "trainer_id")
+    private Trainer trainer;
+
+    @ManyToOne
+    @JoinColumn(name = "training_type_id")
+    private TrainingType trainingType;
+    // ----------------------------------------------------------------
+
+    @Column(name = "training_name") // This field maps to the 'training_name' column
     private String trainingName;
-    private String trainingType;
+
+    @Column(name = "training_date") // This field maps to the 'training_date' column
     private LocalDate trainingDate;
+
+    @Column(name = "training_duration") // This field maps to the 'training_duration' column
     private int trainingDuration;
 
-    public long getTraineeId() {
-        return traineeId;
-    }
 
-    public void setTraineeId(long traineeId) {
-        this.traineeId = traineeId;
-    }
 
     public Long getId() {
         return id;
@@ -28,12 +45,28 @@ public class Training {
         this.id = id;
     }
 
-    public long getTrainerId() {
-        return trainerId;
+    public Trainee getTrainee() {
+        return trainee;
     }
 
-    public void setTrainerId(long trainerId) {
-        this.trainerId = trainerId;
+    public void setTrainee(Trainee trainee) {
+        this.trainee = trainee;
+    }
+
+    public Trainer getTrainer() {
+        return trainer;
+    }
+
+    public void setTrainer(Trainer trainer) {
+        this.trainer = trainer;
+    }
+
+    public TrainingType getTrainingType() {
+        return trainingType;
+    }
+
+    public void setTrainingType(TrainingType trainingType) {
+        this.trainingType = trainingType;
     }
 
     public String getTrainingName() {
@@ -42,14 +75,6 @@ public class Training {
 
     public void setTrainingName(String trainingName) {
         this.trainingName = trainingName;
-    }
-
-    public String getTrainingType() {
-        return trainingType;
-    }
-
-    public void setTrainingType(String trainingType) {
-        this.trainingType = trainingType;
     }
 
     public LocalDate getTrainingDate() {
@@ -68,27 +93,28 @@ public class Training {
         this.trainingDuration = trainingDuration;
     }
 
-    @Override
-    public String toString() {
-        return "Training{" +
-                "traineeId=" + traineeId +
-                ", trainerId=" + trainerId +
-                ", trainingName='" + trainingName + '\'' +
-                ", trainingType='" + trainingType + '\'' +
-                ", trainingDate=" + trainingDate +
-                ", trainingDuration=" + trainingDuration +
-                '}';
-    }
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) return true;
+        if (o == null || getClass()!= o.getClass()) return false;
         Training training = (Training) o;
-        return traineeId == training.traineeId && trainerId == training.trainerId && trainingDuration == training.trainingDuration && Objects.equals(trainingName, training.trainingName) && Objects.equals(trainingType, training.trainingType) && Objects.equals(trainingDate, training.trainingDate);
+        return id!= null && id.equals(training.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(traineeId, trainerId, trainingName, trainingType, trainingDate, trainingDuration);
+        return getClass().hashCode();
+    }
+
+
+    @Override
+    public String toString() {
+        return "Training{" +
+                "id=" + id +
+                ", traineeId=" + (trainee!= null? trainee.getId() : "null") +
+                ", trainerId=" + (trainer!= null? trainer.getId() : "null") +
+                ", trainingName='" + trainingName + '\'' +
+                '}';
     }
 }

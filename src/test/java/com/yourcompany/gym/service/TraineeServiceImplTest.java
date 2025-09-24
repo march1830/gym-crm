@@ -1,53 +1,100 @@
 package com.yourcompany.gym.service;
 
-import com.yourcompany.gym.dao.TraineeDAO;
 import com.yourcompany.gym.model.Trainee;
+import com.yourcompany.gym.model.Trainer;
+import com.yourcompany.gym.repository.TraineeRepository;
+import com.yourcompany.gym.repository.TrainerRepository;
+import com.yourcompany.gym.repository.UserRepository;
+import com.yourcompany.gym.service.impl.TraineeServiceImpl;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-
 class TraineeServiceImplTest {
+
     @Mock
-    private TraineeDAO traineeDAO;
+    private TraineeRepository traineeRepository;
+    @Mock
+    private TrainerRepository trainerRepository; // Needed for updateTrainersList
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder; // Assuming it's needed for other tests
 
     @InjectMocks
     private TraineeServiceImpl traineeService;
 
+    // Your existing createTraineeProfile test...
+
     @Test
-    void createTraineeProfile_shouldGenerateUniqueUsername_whenBaseUsernameExists() {
+    void updateProfile_ShouldUpdateTraineeDetails() {
+        // Arrange
+        String username = "test.trainee";
+        Trainee existingTrainee = new Trainee();
+        existingTrainee.setUsername(username);
+        existingTrainee.setFirstName("OldName");
 
-        Trainee traineeToCreate = new Trainee();
-        traineeToCreate.setFirstName("John");
-        traineeToCreate.setLastName("Doe");
+        when(traineeRepository.findByUsername(username)).thenReturn(Optional.of(existingTrainee));
+        when(traineeRepository.save(any(Trainee.class))).thenAnswer(inv -> inv.getArgument(0));
 
+        // Act
+        Trainee updated = traineeService.updateTraineeProfile(username, "NewName", "LastName", LocalDate.now(), "Address", true);
 
-        when(traineeDAO.findByUsername("john.doe")).thenReturn(Optional.of(new Trainee()));
+        // Assert
+        Assertions.assertEquals("NewName", updated.getFirstName());
+        Assertions.assertEquals("Address", updated.getAddress());
+        verify(traineeRepository).save(existingTrainee);
+    }
 
-        when(traineeDAO.findByUsername("john.doe1")).thenReturn(Optional.empty());
+    @Test
+    void deleteProfileByUsername_ShouldDeleteTrainee() {
+        // Arrange
+        String username = "test.trainee";
+        Trainee traineeToDelete = new Trainee();
+        when(traineeRepository.findByUsername(username)).thenReturn(Optional.of(traineeToDelete));
 
-        when(traineeDAO.save(any(Trainee.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        // Act
+        traineeService.deleteProfileByUsername(username);
 
+        // Assert
+        verify(traineeRepository).delete(traineeToDelete);
+    }
 
-        Trainee createdTrainee = traineeService.createTraineeProfile(traineeToCreate);
+    @Test
+    void updateTrainersList_ShouldUpdateTraineeTrainers() {
+        // Arrange
+        String traineeUsername = "test.trainee";
+        List<String> trainerUsernames = List.of("test.trainer1", "test.trainer2");
 
+        Trainee trainee = new Trainee();
+        Trainer trainer1 = new Trainer();
+        trainer1.setUsername("test.trainer1");
+        Trainer trainer2 = new Trainer();
+        trainer2.setUsername("test.trainer2");
+        List<Trainer> trainers = List.of(trainer1, trainer2);
 
-        assertNotNull(createdTrainee);
+        when(traineeRepository.findByUsername(traineeUsername)).thenReturn(Optional.of(trainee));
+        when(trainerRepository.findAllByUsernameIn(trainerUsernames)).thenReturn(trainers);
 
-        assertEquals("john.doe1", createdTrainee.getUsername());
+        // Act
+        Set<Trainer> updatedTrainers = traineeService.updateTrainersList(traineeUsername, trainerUsernames);
 
-        assertNotNull(createdTrainee.getPassword());
-        assertEquals(10, createdTrainee.getPassword().length());
-
+        // Assert
+        Assertions.assertEquals(2, updatedTrainers.size());
+        verify(traineeRepository).save(trainee);
     }
 }

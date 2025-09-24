@@ -21,6 +21,16 @@ target/
 .springBeans
 .sts4-cache
 
+# Игнорировать все лог-файлы
+*.log
+
+# Игнорировать папку с результатами сборки Maven
+/target/
+
+# Игнорировать файлы и папки IDE (IntelliJ)
+.idea/
+*.iml
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
