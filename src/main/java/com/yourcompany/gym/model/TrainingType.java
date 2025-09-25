@@ -58,7 +58,7 @@ public class TrainingType {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TrainingType that = (TrainingType) o;
-        // Для справочника, где имя уникально, такой equals - хороший вариант
+
         return Objects.equals(trainingTypeName, that.trainingTypeName);
     }
 

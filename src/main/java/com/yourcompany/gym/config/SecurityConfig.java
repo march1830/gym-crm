@@ -24,7 +24,7 @@ public class SecurityConfig {
     public SecurityConfig(UserDetailsService userDetailsService,
                           PasswordEncoder passwordEncoder,
                           CustomAuthenticationEntryPoint customAuthenticationEntryPoint) {
-        System.out.println(">>>> SecurityConfig БИН СОЗДАН и получил EntryPoint! <<<<");
+
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
         this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;

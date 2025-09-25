@@ -35,7 +35,6 @@ class AuthenticationServiceImplTest {
         String rawPassword = "password123";
         String hashedPassword = "$2a$10$somebcryptstring";
 
-        // ИСПРАВЛЕНО: Создаем конкретного наследника, а не абстрактного User
         User user = new Trainee();
         user.setUsername(username);
         user.setPassword(hashedPassword);
@@ -72,7 +71,6 @@ class AuthenticationServiceImplTest {
         String rawPassword = "wrongPassword";
         String hashedPassword = "$2a$10$somebcryptstring";
 
-        // ИСПРАВЛЕНО: Создаем конкретного наследника, а не абстрактного User
         User user = new Trainee();
         user.setUsername(username);
         user.setPassword(hashedPassword);

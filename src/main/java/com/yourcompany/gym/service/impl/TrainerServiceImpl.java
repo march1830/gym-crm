@@ -50,7 +50,7 @@ public class TrainerServiceImpl implements TrainerService {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.trainerRegistrationCounter = Counter.builder("user.registrations.total")
-                .tag("user_type", "trainee") // Метка, чтобы отличать стажеров от тренеров
+                .tag("user_type", "trainee")
                 .description("Total number of registered trainees")
                 .register(meterRegistry);
     }

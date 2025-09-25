@@ -19,7 +19,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     private final ObjectMapper objectMapper;
 
     public CustomAuthenticationEntryPoint(ObjectMapper objectMapper) {
-        System.out.println(">>>> CustomAuthenticationEntryPoint БИН СОЗДАН! <<<<");
         this.objectMapper = objectMapper;
     }
 
