@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/api/trainings") // Base URL for training operations
+@RequestMapping("/api/trainings")
 public class TrainingController {
 
     private final GymFacade gymFacade;
@@ -25,15 +25,12 @@ public class TrainingController {
     @PostMapping
     public ResponseEntity<Void> addTraining(
             @Valid @RequestBody AddTrainingRequest request,
-            Principal principal) { // Inject the Principal to identify the logged-in user.
+            Principal principal) {
 
-        // Security Check: Ensure the authenticated user (from Principal)
-        // is the same trainee for whom the training is being added.
         if (!principal.getName().equals(request.traineeUsername())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        // The facade method is called without a password.
         gymFacade.addTraining(request);
 
         return ResponseEntity.ok().build();

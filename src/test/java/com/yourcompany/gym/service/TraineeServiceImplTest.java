@@ -29,20 +29,19 @@ class TraineeServiceImplTest {
     @Mock
     private TraineeRepository traineeRepository;
     @Mock
-    private TrainerRepository trainerRepository; // Needed for updateTrainersList
+    private TrainerRepository trainerRepository;
     @Mock
     private UserRepository userRepository;
     @Mock
-    private PasswordEncoder passwordEncoder; // Assuming it's needed for other tests
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks
     private TraineeServiceImpl traineeService;
 
-    // Your existing createTraineeProfile test...
 
     @Test
     void updateProfile_ShouldUpdateTraineeDetails() {
-        // Arrange
+
         String username = "test.trainee";
         Trainee existingTrainee = new Trainee();
         existingTrainee.setUsername(username);
@@ -51,10 +50,10 @@ class TraineeServiceImplTest {
         when(traineeRepository.findByUsername(username)).thenReturn(Optional.of(existingTrainee));
         when(traineeRepository.save(any(Trainee.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        // Act
+
         Trainee updated = traineeService.updateTraineeProfile(username, "NewName", "LastName", LocalDate.now(), "Address", true);
 
-        // Assert
+
         Assertions.assertEquals("NewName", updated.getFirstName());
         Assertions.assertEquals("Address", updated.getAddress());
         verify(traineeRepository).save(existingTrainee);
@@ -62,21 +61,21 @@ class TraineeServiceImplTest {
 
     @Test
     void deleteProfileByUsername_ShouldDeleteTrainee() {
-        // Arrange
+
         String username = "test.trainee";
         Trainee traineeToDelete = new Trainee();
         when(traineeRepository.findByUsername(username)).thenReturn(Optional.of(traineeToDelete));
 
-        // Act
+
         traineeService.deleteProfileByUsername(username);
 
-        // Assert
+
         verify(traineeRepository).delete(traineeToDelete);
     }
 
     @Test
     void updateTrainersList_ShouldUpdateTraineeTrainers() {
-        // Arrange
+
         String traineeUsername = "test.trainee";
         List<String> trainerUsernames = List.of("test.trainer1", "test.trainer2");
 
@@ -90,10 +89,10 @@ class TraineeServiceImplTest {
         when(traineeRepository.findByUsername(traineeUsername)).thenReturn(Optional.of(trainee));
         when(trainerRepository.findAllByUsernameIn(trainerUsernames)).thenReturn(trainers);
 
-        // Act
+
         Set<Trainer> updatedTrainers = traineeService.updateTrainersList(traineeUsername, trainerUsernames);
 
-        // Assert
+
         Assertions.assertEquals(2, updatedTrainers.size());
         verify(traineeRepository).save(trainee);
     }

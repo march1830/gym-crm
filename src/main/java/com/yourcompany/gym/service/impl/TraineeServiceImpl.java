@@ -49,20 +49,16 @@ public class TraineeServiceImpl implements TraineeService {
                 .register(meterRegistry);
     }
 
-
-    // Note: The return type of the method must also be changed in the TraineeService interface
-// from "Trainee" to "TraineeDTO".
     @Override
     @Transactional
     public RegistrationResponse createTraineeProfile(String firstName, String lastName, LocalDate dateOfBirth, String address) {
         log.info("Attempting to create a trainee profile for: {} {}", firstName, lastName);
 
-        // Remark #3: Validation logic is moved to a separate utility class.
-        try {
+                try {
             ValidationUtils.validateRequiredFields(firstName, lastName);
         } catch (IllegalArgumentException e) {
             log.error("Validation failed for creating trainee profile: {}", e.getMessage());
-            throw e; // Re-throw the exception after logging
+            throw e;
         }
 
         Trainee trainee = new Trainee();
@@ -85,9 +81,7 @@ public class TraineeServiceImpl implements TraineeService {
 
         this.traineeRegistrationCounter.increment();
 
-        // Remark #2: Convert the saved entity to a DTO before returning it.
-        // This prevents leaking sensitive data like the hashed password.
-        return new RegistrationResponse(savedTrainee.getUsername());
+              return new RegistrationResponse(savedTrainee.getUsername());
     }
 
 

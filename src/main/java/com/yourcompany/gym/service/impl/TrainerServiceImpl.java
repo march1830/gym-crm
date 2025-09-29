@@ -63,14 +63,13 @@ public class TrainerServiceImpl implements TrainerService {
 
         ValidationUtils.validateRequiredFields(firstName, lastName, specializationId);
 
-        // Find the specialization by its ID
         TrainingType specialization = trainingTypeRepository.findById(specializationId)
                 .orElseThrow(() -> new RuntimeException("TrainingType not found with id: " + specializationId));
 
         Trainer trainer = new Trainer();
         trainer.setFirstName(firstName);
         trainer.setLastName(lastName);
-        trainer.setSpecialization(specialization); // Set the found object
+        trainer.setSpecialization(specialization);
         trainer.setActive(true);
 
         String username = generateUsername(firstName, lastName);
@@ -134,7 +133,7 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     @Transactional
-// The method signature is updated, specialization is no longer an argument.
+
     public Trainer updateTrainerProfile(String username, String firstName, String lastName, boolean isActive) {
         log.info("Attempting to update profile for trainer with username: {}", username);
 
@@ -148,8 +147,7 @@ public class TrainerServiceImpl implements TrainerService {
         trainerToUpdate.setLastName(lastName);
         trainerToUpdate.setActive(isActive);
 
-        // We no longer call trainerToUpdate.setSpecialization().
-        // This ensures the existing specialization remains unchanged.
+
 
         Trainer updatedTrainer = trainerRepository.save(trainerToUpdate);
         log.info("Successfully updated profile for trainer with ID: {}", updatedTrainer.getId());

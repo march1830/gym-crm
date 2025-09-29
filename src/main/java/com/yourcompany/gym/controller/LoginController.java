@@ -23,7 +23,6 @@ public class LoginController {
             @Valid @RequestBody ChangePasswordRequest request,
             Principal principal) {
 
-        // We get the username from the secure Principal object, not from the request body.
         gymFacade.changeUserPassword(principal.getName(), request.newPassword());
         return ResponseEntity.ok().build();
     }

@@ -25,14 +25,14 @@ class UserServiceImplTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
-    // We no longer need AuthenticationService here, so it's removed.
+
 
     @InjectMocks
     private UserServiceImpl userService;
 
     @Test
     void changePassword_ShouldChangePasswordSuccessfully() {
-        // Arrange
+
         String username = "test.user";
         String newPassword = "newPassword";
         String newHashedPassword = "newHashedPassword";
@@ -40,17 +40,15 @@ class UserServiceImplTest {
         User user = new Trainee();
         user.setUsername(username);
 
-        // This stub is no longer needed and has been removed:
-        // when(authenticationService.checkCredentials(username, oldPassword)).thenReturn(true);
+
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
         when(passwordEncoder.encode(newPassword)).thenReturn(newHashedPassword);
 
-        // Act
-        // We now call the updated method with two arguments.
+
         userService.changePassword(username, newPassword);
 
-        // Assert
+
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(userCaptor.capture());
         User savedUser = userCaptor.getValue();
@@ -58,12 +56,10 @@ class UserServiceImplTest {
         Assertions.assertEquals(newHashedPassword, savedUser.getPassword());
     }
 
-    // This test for invalid old password is no longer relevant, as the service
-    // doesn't check the old password anymore. It can be removed.
 
     @Test
     void setActiveStatus_ShouldUpdateUserStatus() {
-        // Arrange
+
         String username = "test.user";
         boolean newStatus = false;
 
@@ -72,10 +68,10 @@ class UserServiceImplTest {
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
 
-        // Act
+
         userService.setActiveStatus(username, newStatus);
 
-        // Assert
+
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(userCaptor.capture());
         User savedUser = userCaptor.getValue();

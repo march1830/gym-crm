@@ -24,15 +24,15 @@ public class Training {
     @ManyToOne
     @JoinColumn(name = "training_type_id")
     private TrainingType trainingType;
-    // ----------------------------------------------------------------
 
-    @Column(name = "training_name") // This field maps to the 'training_name' column
+
+    @Column(name = "training_name")
     private String trainingName;
 
-    @Column(name = "training_date") // This field maps to the 'training_date' column
+    @Column(name = "training_date")
     private LocalDate trainingDate;
 
-    @Column(name = "training_duration") // This field maps to the 'training_duration' column
+    @Column(name = "training_duration")
     private int trainingDuration;
 
 

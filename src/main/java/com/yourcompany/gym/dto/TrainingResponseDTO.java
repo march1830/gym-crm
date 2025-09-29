@@ -4,15 +4,14 @@ import com.yourcompany.gym.model.Training;
 import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-// DTO for returning training information
 public record TrainingResponseDTO(
         String trainingName,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         LocalDate trainingDate,
         String trainingType,
         int trainingDuration,
-        String trainerName, // For trainee's list
-        String traineeName  // For trainer's list
+        String trainerName,
+        String traineeName
 ) {
     public static TrainingResponseDTO forTrainee(Training training) {
         String trainerName = training.getTrainer() != null ? training.getTrainer().getFirstName() : null;

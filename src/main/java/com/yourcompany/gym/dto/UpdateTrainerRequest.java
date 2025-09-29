@@ -16,7 +16,6 @@ public record UpdateTrainerRequest(
         @Pattern(regexp = "^[a-zA-Z]*$", message = "Last name must contain only letters")
         String lastName,
 
-        // The specializationId field has been removed to make it read-only.
 
         @NotNull(message = "Active status cannot be null")
         Boolean isActive

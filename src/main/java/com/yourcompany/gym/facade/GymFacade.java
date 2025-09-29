@@ -96,7 +96,6 @@ public class GymFacade {
 
     @Transactional
     public TrainerProfileResponse updateTrainer(UpdateTrainerRequest request) {
-        // We no longer need to find the specialization here.
         Trainer updatedTrainer = trainerService.updateTrainerProfile(
                 request.username(),
                 request.firstName(),
@@ -133,8 +132,7 @@ public class GymFacade {
 
     // --- General User Methods (Protected by Spring Security) ---
     public void changeUserPassword(String username, String newPassword) {
-        // The service layer will handle the logic, no need for old password here
-        userService.changePassword(username, newPassword);
+              userService.changePassword(username, newPassword);
     }
 
     public void setUserActiveStatus(String username, boolean isActive) {

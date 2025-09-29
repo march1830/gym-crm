@@ -32,27 +32,26 @@ class TrainerServiceImplTest {
 
     @Test
     void getUnassignedTrainers_ShouldReturnTrainersNotInTraineesList() {
-        // Arrange
+
         String traineeUsername = "test.trainee";
 
-        // Create trainers
         Trainer assignedTrainer = new Trainer();
         assignedTrainer.setId(1L);
         Trainer unassignedTrainer = new Trainer();
         unassignedTrainer.setId(2L);
         List<Trainer> allActiveTrainers = List.of(assignedTrainer, unassignedTrainer);
 
-        // Create a trainee with one trainer already assigned
+
         Trainee trainee = new Trainee();
         trainee.setTrainers(new HashSet<>(Set.of(assignedTrainer)));
 
         when(trainerRepository.findAllByIsActive(true)).thenReturn(allActiveTrainers);
         when(traineeRepository.findByUsername(traineeUsername)).thenReturn(Optional.of(trainee));
 
-        // Act
+
         List<Trainer> result = trainerService.getUnassignedTrainers(traineeUsername);
 
-        // Assert
+
         Assertions.assertEquals(1, result.size());
         Assertions.assertEquals(unassignedTrainer.getId(), result.get(0).getId());
     }

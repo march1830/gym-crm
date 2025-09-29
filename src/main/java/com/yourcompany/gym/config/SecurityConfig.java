@@ -1,4 +1,3 @@
-// src/main/java/com/yourcompany/gym/config/SecurityConfig.java
 package com.yourcompany.gym.config;
 
 import com.yourcompany.gym.exception.CustomAuthenticationEntryPoint;

@@ -2,7 +2,6 @@ package com.yourcompany.gym.dto;
 
 import com.yourcompany.gym.model.Trainee;
 
-// This record holds basic information about a trainee.
 public record TraineeInfo(
         String username,
         String firstName,

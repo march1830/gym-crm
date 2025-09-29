@@ -1,4 +1,3 @@
-// src/main/java/com/yourcompany/gym/controller/AuthenticationController.java
 package com.yourcompany.gym.controller;
 
 import com.yourcompany.gym.dto.AuthenticationRequest;

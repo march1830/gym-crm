@@ -24,17 +24,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    // The method signature is now updated to match the interface and the facade's call.
     public void changePassword(String username, String newPassword) {
         log.info("Attempting to change password for user: {}", username);
 
-        // The old password check is no longer needed here.
-        // Spring Security has already authenticated the user before this method is called.
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username)); // This should not happen if the user is authenticated
 
-        // We just encode the new password and save it.
         user.setPassword(passwordEncoder.encode(newPassword));
 
         userRepository.save(user);
