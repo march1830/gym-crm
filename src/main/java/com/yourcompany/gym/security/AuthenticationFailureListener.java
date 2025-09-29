@@ -15,7 +15,6 @@ public class AuthenticationFailureListener implements ApplicationListener<Authen
 
     @Override
     public void onApplicationEvent(AuthenticationFailureBadCredentialsEvent event) {
-        // get ip and record failed attempt
         String clientIp = loginAttemptService.getClientIP(request);
         loginAttemptService.loginFailed(clientIp);
     }

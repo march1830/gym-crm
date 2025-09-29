@@ -27,8 +27,8 @@ public class AuthenticationController {
     private final AuthenticationManager authenticationManager;
     private final LoginAttemptService loginAttemptService;
     private final HttpServletRequest request;
-    private final UserDetailsService userDetailsService; // <-- Add this
-    private final JwtService jwtService;             // <-- Add this
+    private final UserDetailsService userDetailsService;
+    private final JwtService jwtService;
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest authRequest) {
@@ -43,20 +43,16 @@ public class AuthenticationController {
                     new UsernamePasswordAuthenticationToken(authRequest.username(), authRequest.password())
             );
 
-            // auth is successful, reset attempts
             loginAttemptService.loginSucceeded(clientIp);
 
-            // find user details
             final UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.username());
 
-            // generate token
             final String jwt = jwtService.generateToken(userDetails);
 
-            // return token in response
             return ResponseEntity.ok(new AuthenticationResponse(jwt));
 
         } catch (BadCredentialsException e) {
-            // auth failed
+
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new AuthenticationResponse("Error: Invalid username or password."));
         }
