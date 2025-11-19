@@ -13,5 +13,12 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
+  activemq:
+      image: apache/activemq-classic:latest
+      container_name: gym_crm_activemq
+      ports:
+        - "8161:8161"
+        - "61616:61616"
+
 volumes:
   postgres-data:
