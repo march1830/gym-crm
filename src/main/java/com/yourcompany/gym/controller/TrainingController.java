@@ -23,7 +23,7 @@ public class TrainingController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> addTraining(
+    public ResponseEntity<String> addTraining(
             @Valid @RequestBody AddTrainingRequest request,
             Principal principal) {
 
@@ -33,6 +33,6 @@ public class TrainingController {
 
         gymFacade.addTraining(request);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("The request has been sent for processing. Wait for execution.");
     }
 }
