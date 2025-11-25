@@ -45,6 +45,7 @@ public class WorkloadNotificationServiceImpl {
         workloadRequest.setTrainingDate(savedTraining.getTrainingDate());
         workloadRequest.setTrainingDuration((long) savedTraining.getTrainingDuration());
         workloadRequest.setActionType("ADD");
+        workloadRequest.setTransactionId(java.util.UUID.randomUUID().toString());
         return workloadRequest;
     }
 }

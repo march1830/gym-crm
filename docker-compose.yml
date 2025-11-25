@@ -20,5 +20,14 @@ services:
         - "8161:8161"
         - "61616:61616"
 
+  mongo:
+      image: mongo:6.0
+      container_name: gym_mongo
+      ports:
+          - "27017:27017"
+      volumes:
+          - mongo-data:/data/db
+
 volumes:
-  postgres-data:
+    mongo-data:
+    postgres-data:
