@@ -84,7 +84,7 @@ public class TrainerServiceImpl implements TrainerService {
 
         this.trainerRegistrationCounter.increment();
 
-        return new RegistrationResponse(savedTrainer.getUsername());
+        return new RegistrationResponse(savedTrainer.getUsername(), password);
     }
 
 

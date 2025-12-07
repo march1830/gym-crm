@@ -8,6 +8,7 @@ import com.yourcompany.gym.security.JwtService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.jms.core.JmsTemplate;
@@ -45,7 +46,8 @@ public class WorkloadNotificationServiceImpl {
         workloadRequest.setTrainingDate(savedTraining.getTrainingDate());
         workloadRequest.setTrainingDuration((long) savedTraining.getTrainingDuration());
         workloadRequest.setActionType("ADD");
-        workloadRequest.setTransactionId(java.util.UUID.randomUUID().toString());
+        String currentTransactionId = MDC.get("transactionId");
+        workloadRequest.setTransactionId(currentTransactionId); //mistake
         return workloadRequest;
     }
 }
