@@ -81,7 +81,7 @@ public class TraineeServiceImpl implements TraineeService {
 
         this.traineeRegistrationCounter.increment();
 
-              return new RegistrationResponse(savedTrainee.getUsername());
+              return new RegistrationResponse(savedTrainee.getUsername(), password);
     }
 
 
