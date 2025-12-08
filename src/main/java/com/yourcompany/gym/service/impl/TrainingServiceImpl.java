@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,12 +26,15 @@ public class TrainingServiceImpl implements TrainingService {
     private final TrainingRepository trainingRepository;
     private final TraineeRepository traineeRepository;
     private final TrainerRepository trainerRepository;
+    private final Counter trainingsAddedCounter;
 
     @Autowired
-    public TrainingServiceImpl(TrainingRepository trainingRepository, TraineeRepository traineeRepository, TrainerRepository trainerRepository) {
+    public TrainingServiceImpl(TrainingRepository trainingRepository, TraineeRepository traineeRepository, TrainerRepository trainerRepository, MeterRegistry meterRegistry) {
         this.trainingRepository = trainingRepository;
         this.traineeRepository = traineeRepository;
         this.trainerRepository = trainerRepository;
+        this.trainingsAddedCounter = meterRegistry.counter("trainings.added.total",
+                "description", "Total number of trainings added");
     }
 
     @Override
@@ -61,6 +66,8 @@ public class TrainingServiceImpl implements TrainingService {
 
         Training savedTraining = trainingRepository.save(newTraining);
         log.info("Successfully added training with ID: {}", savedTraining.getId());
+
+        this.trainingsAddedCounter.increment();
 
         return savedTraining;
     }

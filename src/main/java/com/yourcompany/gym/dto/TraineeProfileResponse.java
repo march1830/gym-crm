@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-// This DTO represents the full profile of a trainee for a GET request.
 public record TraineeProfileResponse(
         String firstName,
         String lastName,

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.FutureOrPresent;
 import java.time.LocalDate;
 
-// DTO for the add training request
+
 public record AddTrainingRequest(
         @NotBlank String traineeUsername,
         // The 'password' field has been removed.

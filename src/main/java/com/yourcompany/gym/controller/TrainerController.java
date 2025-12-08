@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/trainers") // Base URL for all trainer-related operations
+@RequestMapping("/api/trainers")
 public class TrainerController {
 
     private final GymFacade gymFacade;
@@ -23,7 +23,7 @@ public class TrainerController {
 
     @GetMapping("/{username}")
     public ResponseEntity<TrainerProfileResponse> getTrainerProfile(@PathVariable String username) {
-        // The password check is now handled by Spring Security's HttpBasic.
+
         var profile = gymFacade.getTrainerProfile(username);
         return ResponseEntity.ok(profile);
     }
@@ -32,9 +32,8 @@ public class TrainerController {
     public ResponseEntity<TrainerProfileResponse> updateTrainerProfile(
             @PathVariable String username,
             @Valid @RequestBody UpdateTrainerRequest request,
-            Principal principal) { // Use Principal to get the authenticated user.
+            Principal principal) {
 
-        // Security Check: Ensure the logged-in user is the one they are trying to update.
         if (!principal.getName().equals(username)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -42,7 +41,6 @@ public class TrainerController {
             return ResponseEntity.badRequest().build();
         }
 
-        // Call the updated facade method which no longer requires a password.
         var updatedProfile = gymFacade.updateTrainer(request);
         return ResponseEntity.ok(updatedProfile);
     }
@@ -53,7 +51,6 @@ public class TrainerController {
             @Valid @RequestBody UpdateActiveStatusRequest request,
             Principal principal) { // Use Principal for security.
 
-        // Security Check: A trainer can only change their own active status.
         if (!principal.getName().equals(username)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -69,7 +66,6 @@ public class TrainerController {
             @RequestParam(required = false) LocalDate toDate,
             @RequestParam(required = false) String traineeName) {
 
-        // No password needed in the method call. Spring Security protects the endpoint.
         List<TrainingResponseDTO> trainings = gymFacade.getTrainerTrainings(username, fromDate, toDate, traineeName);
         return ResponseEntity.ok(trainings);
     }

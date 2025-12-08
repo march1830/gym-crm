@@ -30,12 +30,11 @@ class AuthenticationServiceImplTest {
 
     @Test
     void checkCredentials_ShouldReturnTrue_WhenCredentialsAreValid() {
-        // Arrange
+
         String username = "test.user";
         String rawPassword = "password123";
         String hashedPassword = "$2a$10$somebcryptstring";
 
-        // ИСПРАВЛЕНО: Создаем конкретного наследника, а не абстрактного User
         User user = new Trainee();
         user.setUsername(username);
         user.setPassword(hashedPassword);
@@ -43,36 +42,31 @@ class AuthenticationServiceImplTest {
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(rawPassword, hashedPassword)).thenReturn(true);
 
-        // Act
         boolean result = authenticationService.checkCredentials(username, rawPassword);
 
-        // Assert
         Assertions.assertTrue(result);
     }
 
     @Test
     void checkCredentials_ShouldReturnFalse_WhenUserNotFound() {
-        // Arrange
+
         String username = "non.existent.user";
         String password = "password123";
 
         when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
 
-        // Act
         boolean result = authenticationService.checkCredentials(username, password);
 
-        // Assert
         Assertions.assertFalse(result);
     }
 
     @Test
     void checkCredentials_ShouldReturnFalse_WhenPasswordIsInvalid() {
-        // Arrange
+
         String username = "test.user";
         String rawPassword = "wrongPassword";
         String hashedPassword = "$2a$10$somebcryptstring";
 
-        // ИСПРАВЛЕНО: Создаем конкретного наследника, а не абстрактного User
         User user = new Trainee();
         user.setUsername(username);
         user.setPassword(hashedPassword);
@@ -80,10 +74,8 @@ class AuthenticationServiceImplTest {
         when(userRepository.findByUsername(username)).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(rawPassword, hashedPassword)).thenReturn(false);
 
-        // Act
         boolean result = authenticationService.checkCredentials(username, rawPassword);
 
-        // Assert
         Assertions.assertFalse(result);
     }
 }

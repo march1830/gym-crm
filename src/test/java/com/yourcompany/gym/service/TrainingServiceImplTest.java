@@ -63,10 +63,10 @@ class TrainingServiceImplTest {
             return trainingToSave;
         });
 
-        // Act
+
         trainingService.addTraining(traineeUsername, trainerUsername, trainingName, trainingDate, duration);
 
-        // Assert
+
         ArgumentCaptor<Training> trainingCaptor = ArgumentCaptor.forClass(Training.class);
         verify(trainingRepository).save(trainingCaptor.capture());
 

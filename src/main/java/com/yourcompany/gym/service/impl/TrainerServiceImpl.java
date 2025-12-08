@@ -17,7 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.yourcompany.gym.utils.ValidationUtils;
-
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,17 +37,22 @@ public class TrainerServiceImpl implements TrainerService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final TrainingTypeRepository trainingTypeRepository;
+    private final Counter trainerRegistrationCounter;
 
     private static final int PASSWORD_LENGTH = 10;
 
 
     @Autowired
-    public TrainerServiceImpl(TrainerRepository trainerRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, TraineeRepository traineeRepository, TrainingTypeRepository trainingTypeRepository) {
+    public TrainerServiceImpl(TrainerRepository trainerRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, TraineeRepository traineeRepository, TrainingTypeRepository trainingTypeRepository, MeterRegistry meterRegistry) {
         this.trainerRepository = trainerRepository;
         this.traineeRepository = traineeRepository;
         this.trainingTypeRepository = trainingTypeRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.trainerRegistrationCounter = Counter.builder("user.registrations.total")
+                .tag("user_type", "trainee")
+                .description("Total number of registered trainees")
+                .register(meterRegistry);
     }
 
 
@@ -57,14 +63,13 @@ public class TrainerServiceImpl implements TrainerService {
 
         ValidationUtils.validateRequiredFields(firstName, lastName, specializationId);
 
-        // Find the specialization by its ID
         TrainingType specialization = trainingTypeRepository.findById(specializationId)
                 .orElseThrow(() -> new RuntimeException("TrainingType not found with id: " + specializationId));
 
         Trainer trainer = new Trainer();
         trainer.setFirstName(firstName);
         trainer.setLastName(lastName);
-        trainer.setSpecialization(specialization); // Set the found object
+        trainer.setSpecialization(specialization);
         trainer.setActive(true);
 
         String username = generateUsername(firstName, lastName);
@@ -76,6 +81,8 @@ public class TrainerServiceImpl implements TrainerService {
 
         Trainer savedTrainer = trainerRepository.save(trainer);
         log.info("Successfully created trainer with ID: {}", savedTrainer.getId());
+
+        this.trainerRegistrationCounter.increment();
 
         return new RegistrationResponse(savedTrainer.getUsername());
     }
@@ -126,7 +133,7 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     @Transactional
-// The method signature is updated, specialization is no longer an argument.
+
     public Trainer updateTrainerProfile(String username, String firstName, String lastName, boolean isActive) {
         log.info("Attempting to update profile for trainer with username: {}", username);
 
@@ -140,8 +147,7 @@ public class TrainerServiceImpl implements TrainerService {
         trainerToUpdate.setLastName(lastName);
         trainerToUpdate.setActive(isActive);
 
-        // We no longer call trainerToUpdate.setSpecialization().
-        // This ensures the existing specialization remains unchanged.
+
 
         Trainer updatedTrainer = trainerRepository.save(trainerToUpdate);
         log.info("Successfully updated profile for trainer with ID: {}", updatedTrainer.getId());

@@ -34,20 +34,17 @@ public class RegistrationController {
                 request.address()
         );
 
-        // This block creates the URL for the newly created resource.
-        URI location = ServletUriComponentsBuilder
+               URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath()
                 .path("/api/trainees/{username}")
                 .buildAndExpand(response.username())
                 .toUri();
 
-        // We return a 201 Created status with the Location header and the response body.
         return ResponseEntity.created(location).body(response);
     }
 
     @PostMapping("/trainer")
     public ResponseEntity<RegistrationResponse> registerTrainer(@Valid @RequestBody TrainerRegistrationRequest request) {
-        // Now, the facade immediately returns the RegistrationResponse object we need
         var response = gymFacade.createTrainer(
                 request.firstName(),
                 request.lastName(),
@@ -55,14 +52,12 @@ public class RegistrationController {
         );
 
 
-        // This block creates the URL for the newly created resource.
-        URI location = ServletUriComponentsBuilder
+                URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath()
                 .path("/api/trainers/{username}")
                 .buildAndExpand(response.username())
                 .toUri();
 
-        // We return a 201 Created status with the Location header and the response body.
         return ResponseEntity.created(location).body(response);
     }
 }

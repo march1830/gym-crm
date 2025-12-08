@@ -5,7 +5,7 @@ import com.yourcompany.gym.model.Trainer;
 import java.util.List;
 import java.util.stream.Collectors;
 
-// This DTO represents the full profile of a trainer for a GET request.
+
 public record TrainerProfileResponse(
         String firstName,
         String lastName,
@@ -14,7 +14,7 @@ public record TrainerProfileResponse(
         List<TraineeInfo> trainees
 ) {
     public static TrainerProfileResponse fromEntity(Trainer trainer) {
-        // Convert the Set<Trainee> entities into a List<TraineeInfo> DTOs
+
         List<TraineeInfo> traineeInfos = trainer.getTrainees()
                 .stream()
                 .map(TraineeInfo::fromEntity)
