@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -20,24 +21,19 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 public class WorkloadNotificationServiceImpl {
 
-    private final RestTemplate restTemplate;
-    private final RestTemplate workLoadServiceRestTemplate;
-    private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
+    private final JmsTemplate jmsTemplate;
 
-    @CircuitBreaker(name = "workloadService", fallbackMethod = "fallbackSendWorkload")
     public void sendWorkload(Trainer trainer, Training savedTraining) {
         TrainerWorkloadRequest workloadRequest = getTrainerWorkloadRequest(trainer, savedTraining);
+        log.info("Sending workload update to ActiveMQ queue 'workload.topic' for trainer: {}", trainer.getUsername());
 
-        UserDetails userDetails = this.userDetailsService.loadUserByUsername(trainer.getUsername());
-
-        String token = jwtService.generateToken(userDetails);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " +  token);
-        HttpEntity<TrainerWorkloadRequest> requestEntity = new HttpEntity<>(workloadRequest, headers);
-
-        String workloadUrl = "http://WORKLOAD-SERVICE/api/v1/workload";
-        restTemplate.postForEntity(workloadUrl, requestEntity, Void.class);
+        try {
+            jmsTemplate.convertAndSend("workload.topic", workloadRequest);
+            log.info("Message sent successfully");
+        } catch (Exception e) {
+            log.error("Failed to send message to ActiveMQ", e);
+            throw e;
+        }
     }
 
     private TrainerWorkloadRequest getTrainerWorkloadRequest(Trainer trainer, Training savedTraining) {
@@ -51,11 +47,4 @@ public class WorkloadNotificationServiceImpl {
         workloadRequest.setActionType("ADD");
         return workloadRequest;
     }
-
-    private void fallbackSendWorkload(Trainer trainer, Training savedTraining, Throwable exception) {
-        log.warn("Workload service is down or busy. Could not send update for trainer {}. Error: {}",
-                trainer.getUsername(), exception.getMessage());
-        throw new WorkloadServiceUnavailableException("Workload service is unavailable. Training created, but summary update failed.");
-    }
-
 }

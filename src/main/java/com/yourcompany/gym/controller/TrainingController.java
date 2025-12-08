@@ -5,10 +5,7 @@ import com.yourcompany.gym.facade.GymFacade;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -23,7 +20,7 @@ public class TrainingController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> addTraining(
+    public ResponseEntity<String> addTraining(
             @Valid @RequestBody AddTrainingRequest request,
             Principal principal) {
 
@@ -33,6 +30,8 @@ public class TrainingController {
 
         gymFacade.addTraining(request);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .body("The request has been sent for processing. Wait for execution.");
     }
 }
