@@ -26,14 +26,21 @@ public class WorkloadNotificationServiceImpl {
 
     public void sendWorkload(Trainer trainer, Training savedTraining) {
         TrainerWorkloadRequest workloadRequest = getTrainerWorkloadRequest(trainer, savedTraining);
+        String transactionId = MDC.get("transactionId");
         log.info("Sending workload update to ActiveMQ queue 'workload.topic' for trainer: {}", trainer.getUsername());
 
         try {
-            jmsTemplate.convertAndSend("workload.topic", workloadRequest);
+            jmsTemplate.convertAndSend("workload.topic", workloadRequest, message -> {
+                if (transactionId != null) {
+                    message.setStringProperty("transactionId", transactionId);
+                }
+                return message;
+            });
+
             log.info("Message sent successfully");
         } catch (Exception e) {
             log.error("Failed to send message to ActiveMQ", e);
-            throw e;
+            throw e; 
         }
     }
 
@@ -47,7 +54,7 @@ public class WorkloadNotificationServiceImpl {
         workloadRequest.setTrainingDuration((long) savedTraining.getTrainingDuration());
         workloadRequest.setActionType("ADD");
         String currentTransactionId = MDC.get("transactionId");
-        workloadRequest.setTransactionId(currentTransactionId); //mistake
+
         return workloadRequest;
     }
 }
